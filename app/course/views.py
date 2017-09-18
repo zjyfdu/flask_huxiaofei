@@ -19,3 +19,7 @@ from ..models import User
 @course.route('/')
 def index():
     return render_template('course/index.html')
+
+@course.route('/class/<int:id>', methods=['GET', 'POST'])
+def classes(id):
+    return render_template('course/class.html', id=id)
