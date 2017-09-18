@@ -105,3 +105,55 @@ div.flask-pagedown-preview h3 {
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
 }
+
+#footer a {
+    color: #888;
+}
+
+#footer .app-qrcode {
+    width: 64px;
+    height: 64px;
+    float: left;
+}
+
+#footer .copyright {
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+}
+
+.article{
+	box-shadow:5px 5px 20px #CCC;
+	background-color:white;padding:20px 30px;
+	margin-bottom:40px;
+	overflow: hidden;
+}
+
+#teacher-tag{
+    margin: 2px;
+}
+
+#teacher-img {
+    height: 50px;
+    width: 50px;
+}
+
+#course-img {
+    height: 142px;
+    width: 240px;
+}
+
+.teacher-course {
+    width: 240px;
+    height: 230px;
+    margin-right: 16px;
+    position: relative;
+    float: left;
+}
+
+div.btn {
+    padding: 0px;
+    margin: 0px;
+}
+
+
