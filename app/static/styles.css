@@ -128,8 +128,9 @@ div.flask-pagedown-preview h3 {
 
 .article{
 	box-shadow:5px 5px 20px #CCC;
-	background-color:white;padding:20px 30px;
-	margin-bottom:40px;
+	background-color:white;
+	padding:20px 20px;
+	margin-bottom:20px;
 	overflow: hidden;
 }
 
@@ -140,6 +141,7 @@ div.flask-pagedown-preview h3 {
 #teacher-img {
     height: 50px;
     width: 50px;
+    border-radius: 25px;
 }
 
 #course-img {
@@ -184,35 +186,7 @@ div.btn {
     background-image: url("http://bpic.588ku.com/back_pic/02/67/58/81578e331cc7693.jpg");
 }
 
-
-
-/*取消默认样式*/
-* {  padding: 0;  margin: 0;  list-style: none;  font-size: 12px;  }
-.notice { /*整个div长宽为300 * 100*/
-    width: 298px;  height: 98px;  margin: 10px;  border: 1px solid #eee;  overflow: hidden;
-}
-.notice-title { /*标题的样式*/
-    height: 27px;  position: relative;  background-color: #F7F7F7;
-}
-.notice-title ul { /* absolute + left */
-    position: absolute;  width: 300px;  left: -1px; /*往左移1px，因为li左右边有border边框*/
-}
-.notice-title ul li {
-    float: left;  width: 58px; /*58+padding的2像素*/
-    height: 26px;  line-height: 26px;  text-align: center;  overflow: hidden;
-    background-color: #F7F7F7;  border-bottom: 1px solid #eee;  padding: 0 1px; /*左右边padding一个像素*/
-}
-.notice-title ul li.select {
-    background: #FFF;  border-bottom-color: #FFF; /*下面border置白*/
-    border-left: 1px solid #ccc; /*左右边border*/
-    border-right: 1px solid #ccc;  padding: 0;  font-weight: bolder;
-}
-.notice li a:link, .notice li a:visited {/*清除默认下划线和设置默认字体颜色*/
-    text-decoration: none;  color: #000;
-}
-.notice li a:hover {  color: #F90;  }/*划过的样式*/
-.notice-content .module {  margin: 10px 6px;  }
-.notice-content .module ul li {
-    float: left;  width: 143px; /*(298-6*2)/2*/
-    height: 25px;  overflow: hidden;
+.class-btn {
+    text-align: center;
+    width: 100%;
 }
