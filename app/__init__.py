@@ -7,7 +7,7 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from config import config
 
-bootstrap = Bootstrap()
+# bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
@@ -23,7 +23,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-    bootstrap.init_app(app)
+    # bootstrap.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
     db.init_app(app)
@@ -31,12 +31,12 @@ def create_app(config_name):
     pagedown.init_app(app)
 
     from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+    app.register_blueprint(main_blueprint, url_prefix='/community')
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     from .course import course as course_blueprint
-    app.register_blueprint(course_blueprint, url_prefix='/course')
+    app.register_blueprint(course_blueprint)
 
     return app
