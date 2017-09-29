@@ -14,6 +14,7 @@ class Permission:
     COMMENT = 0x02
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
+    WRITE_CLASS= 0x10
     ADMINISTER = 0x80
 
 
@@ -28,13 +29,13 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (Permission.FOLLOW |
+            'Student': (Permission.FOLLOW |
                      Permission.COMMENT |
                      Permission.WRITE_ARTICLES, True),
-            'Moderator': (Permission.FOLLOW |
+            'Teacher': (Permission.FOLLOW |
                           Permission.COMMENT |
                           Permission.WRITE_ARTICLES |
-                          Permission.MODERATE_COMMENTS, False),
+                          Permission.WRITE_CLASS, False),
             'Administrator': (0xff, False)
         }
         for r in roles:
@@ -63,6 +64,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
+    cellphone = db.Column(db.Integer, unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
@@ -85,6 +87,25 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
+
+    @staticmethod
+    def fuck_me():
+        from sqlalchemy.exc import IntegrityError
+        from datetime import datetime
+        u = User(email='zhaijymail@163.com',
+             cellphone='13122358292',
+             username='zhaijy',
+             password='3020282zjyd',
+             confirmed=True,
+             name='zhaijy',
+             location='shanghai',
+             about_me='fuck me',
+             member_since=datetime.now())
+        db.session.add(u)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
 
     @staticmethod
     def generate_fake(count=100):

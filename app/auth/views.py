@@ -1,12 +1,14 @@
-from flask import render_template, redirect, request, url_for, flash
+#coding: utf-8
+from flask import render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import auth
 from .. import db
 from ..models import User
 from ..email import send_email
+from ..lib.send_sms import send_sms
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
-    PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
+    PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm, PhoneRegistrationForm
 
 
 @auth.before_app_request
@@ -63,6 +65,31 @@ def register():
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
+@auth.route('/sendsms')
+def sendsms():
+    cellphone = request.args.get('cellphone', '')
+    try:
+        code = int(cellphone)
+    except:
+        return jsonify({'Message': "手机号不对啊"})
+    if not(13000000000<code<19999999999):
+        return jsonify({'Message': "手机号不对啊"})
+    code = str(code % 1048577)[:6]
+    message = send_sms(phone_numbers=str(cellphone), code=code)
+    return jsonify(eval(message))
+
+@auth.route('/registersms', methods=['GET', 'POST'])
+def registersms():
+    form = PhoneRegistrationForm()
+    if form.validate_on_submit():
+        user = User(cellphone=form.cellphone.data,
+                    username=form.username.data,
+                    password=form.password.data,
+                    confirmed=True)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('auth.login'))
+    return render_template('auth/registersms.html', form=form)
 
 @auth.route('/confirm/<token>')
 @login_required

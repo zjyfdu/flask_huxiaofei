@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky - Register{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Register</h1>
+</div>
+<div class="col-md-4">
+
+<form method="post" class="form" role="form">
+    {{ form.csrf_token }}
+    <div class="form-group {% if form.cellphone.errors %} has-error{% endif %}">
+        <label class="control-label" for="{{ form.cellphone.name }}">{{ form.cellphone.label }}</label>
+        {{ form.cellphone(class="form-control",placeholder="手机号码",id="cellphone") }}
+        {%- if form.cellphone.errors %}
+          {%- for error in form.cellphone.errors %}
+            <p class="help-block">{{error}}</p>
+          {%- endfor %}
+        {% endif %}
+    </div>
+    <div class="form-group {% if form.verificationcode.errors %} has-error{% endif %}">
+        <label class="control-label" for="{{ form.verificationcode.name }}">{{ form.verificationcode.label }}</label>
+        <div class="input-group">
+        {{ form.verificationcode(class="form-control",placeholder="验证码") }}
+        <span class="input-group-btn">
+			<button class="btn btn-danger" type="button" id="getVerification">获取验证码</button>
+        </span>
+        </div>
+        {%- if form.verificationcode.errors %}
+          {%- for error in form.verificationcode.errors %}
+            <p class="help-block">{{error}}</p>
+          {%- endfor %}
+        {% endif %}
+    </div>
+    <div class="form-group {% if form.username.errors %} has-error{% endif %}">
+        <label class="control-label" for="{{ form.username.name }}">{{ form.username.label }}</label>
+        {{ form.username(class="form-control",placeholder="用户名") }}
+        {%- if form.username.errors %}
+          {%- for error in form.username.errors %}
+            <p class="help-block">{{error}}</p>
+          {%- endfor %}
+        {% endif %}
+    </div>
+    <div class="form-group {% if form.password.errors %} has-error{% endif %}">
+        <label class="control-label" for="{{ form.password.name }}">{{ form.password.label }}</label>
+        {{ form.password(class="form-control",placeholder="密码") }}
+                {%- if form.password.errors %}
+          {%- for error in form.password.errors %}
+            <p class="help-block">{{error}}</p>
+          {%- endfor %}
+        {% endif %}
+    </div>
+    <div class="form-group {% if form.password2.errors %} has-error{% endif %}">
+        <label class="control-label" for="{{ form.password2.name }}">{{ form.password2.label }}</label>
+        {{ form.password2(class="form-control",placeholder="确认密码") }}
+        {%- if form.password2.errors %}
+          {%- for error in form.password2.errors %}
+            <p class="help-block">{{error}}</p>
+          {%- endfor %}
+        {% endif %}
+    </div>
+    <input class="btn btn-default" id="submit" name="submit" type="submit" value="注册">
+</form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script>
+    var countdown=60;
+    function settime(obj) {
+    if (countdown == 0) {
+        obj.removeAttribute("disabled");
+        obj.innerHTML="免费获取验证码";
+        countdown = 60;
+        return;
+    } else {
+        obj.setAttribute("disabled", true);
+        obj.innerHTML="重新发送(" + countdown + ")";
+        countdown--;
+    }
+    setTimeout(function() {settime(obj)},1000)
+    }
+
+    $("#getVerification").click(function () {
+        var tmp=$("#cellphone").val();
+        console.log(tmp);
+        $.getJSON("{{ url_for('auth.sendsms')}}"+"?cellphone="+tmp,
+            function(data){
+                console.log(data);
+                console.log(data.Message);
+                if(data.Message=='OK') {
+                    settime(document.querySelector('#getVerification'));
+                } else{
+                    $(this).text(data.Message);
+                    $(this).setAttribute("disabled", true)
+                }
+
+        });
+    });
+</script>
+    </script>
+{% endblock %}

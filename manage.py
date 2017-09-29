@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 import os
 from app import create_app, db
 from app.models import User, Follow, Role, Permission, Post, Comment
