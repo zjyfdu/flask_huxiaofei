@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky - Register{% endblock %}
+{% block title %}用芯学 - 注册{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Register</h1>
+    <h1>注册</h1>
 </div>
 <div class="col-md-4">
 
@@ -62,6 +62,7 @@
         {% endif %}
     </div>
     <input class="btn btn-default" id="submit" name="submit" type="submit" value="注册">
+    <p><a href="{{ url_for('auth.register') }}">我想使用邮箱注册</a>。</p>
 </form>
 </div>
 {% endblock %}

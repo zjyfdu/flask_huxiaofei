@@ -117,7 +117,6 @@ div.flask-pagedown-preview h3 {
 #footer .app-qrcode {
     width: 64px;
     height: 64px;
-    float: left;
 }
 
 #footer .copyright {
@@ -192,6 +191,13 @@ div.btn {
     width: 100%;
 }
 
-div.navbar-inverse a {
+div.navbar a {
     font-size: 120%;
+    font-weight: bold;
 }
+
+div.navbar {
+	background-color: #F5F5F5;
+}
+
+.footer{position:absolute;bottom:0;}
