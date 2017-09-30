@@ -7,11 +7,10 @@ from ..models import User
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
-                                             Email()])
-    password = PasswordField('Password', validators=[Required()])
-    remember_me = BooleanField('Keep me logged in')
-    submit = SubmitField('Log In')
+    email = StringField(u'邮箱或者手机号', validators=[Required()])
+    password = PasswordField(u'密码', validators=[Required()])
+    remember_me = BooleanField('记住登陆')
+    submit = SubmitField('立即登陆')
 
 
 class RegistrationForm(FlaskForm):
@@ -36,7 +35,7 @@ class RegistrationForm(FlaskForm):
 
 class PhoneRegistrationForm(FlaskForm):
     cellphone = IntegerField(u'手机号', validators=[Required(), NumberRange(13000000000, 19999999999)])
-    verificationcode = StringField(u'验证码', validators=[Required(), Regexp('^\d{1-6}$')])
+    verificationcode = StringField(u'验证码', validators=[Required(), Regexp('^\d{1,6}$')])
     username = StringField(u'用户名', validators=[
         Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
@@ -59,7 +58,6 @@ class PhoneRegistrationForm(FlaskForm):
         code = str(code%1048577)[:6]
         if field.data!=code:
             raise ValidationError(u'验证码错误。')
-
 
 
 class ChangePasswordForm(FlaskForm):

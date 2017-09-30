@@ -129,7 +129,7 @@ div.flask-pagedown-preview h3 {
 .article {
 	background-color: #F5F5F5;
 	overflow: hidden;
-	padding: 9px 14px;
+	padding: 9px;
     margin-bottom: 14px;
     border: 1px solid #CCC;
     border-radius: 4px;
@@ -183,9 +183,9 @@ div.btn {
     /*font-size: small;*/
 /*}*/
 
-//.jumbotron {
- //   background-image: url("http://bpic.588ku.com/back_pic/02/67/58/81578e331cc7693.jpg");
-//}
+/*.jumbotron {*/
+    /*background-image: url("http://bpic.588ku.com/back_pic/02/67/58/81578e331cc7693.jpg");*/
+/*}*/
 
 .class-btn {
     text-align: center;

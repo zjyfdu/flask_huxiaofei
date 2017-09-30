@@ -1,3 +1,4 @@
+#coding: utf-8
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user
@@ -7,6 +8,9 @@ from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
 from .. import db
 from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
+import os
+import datetime
+import random
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -14,6 +18,7 @@ def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
+        print form.body.data
         post = Post(body=form.body.data,
                     author=current_user._get_current_object())
         db.session.add(post)
@@ -245,3 +250,45 @@ def moderate_disable(id):
     db.session.add(comment)
     return redirect(url_for('.moderate',
                             page=request.args.get('page', 1, type=int)))
+
+def gen_rnd_filename():
+    filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))
+
+
+@main.route('/ckupload', methods=['POST', 'OPTIONS'])
+def ckupload():
+    """CKEditor file upload"""
+    error = ''
+    url = ''
+    callback = request.args.get("CKEditorFuncNum")
+
+    if request.method == 'POST' and 'upload' in request.files:
+        fileobj = request.files['upload']
+        fname, fext = os.path.splitext(fileobj.filename)
+        rnd_name = '%s%s' % (gen_rnd_filename(), fext)
+
+        filepath = os.path.join(current_app.static_folder, 'upload', rnd_name)
+
+        dirname = os.path.dirname(filepath)
+        if not os.path.exists(dirname):
+            try:
+                os.makedirs(dirname)
+            except:
+                error = 'ERROR_CREATE_DIR'
+        elif not os.access(dirname, os.W_OK):
+            error = 'ERROR_DIR_NOT_WRITEABLE'
+
+        if not error:
+            fileobj.save(filepath)
+            url = url_for('static', filename='%s/%s' % ('upload', rnd_name))
+    else:
+        error = 'post error'
+
+    res = """<script type="text/javascript">
+  window.parent.CKEDITOR.tools.callFunction(%s, '%s', '%s');
+</script>""" % (callback, url, error)
+
+    response = make_response(res)
+    response.headers["Content-Type"] = "text/html"
+    return response

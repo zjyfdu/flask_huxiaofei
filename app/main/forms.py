@@ -1,3 +1,4 @@
+# coding: utf-8
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField
@@ -51,10 +52,10 @@ class EditProfileAdminForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    body = PageDownField("What's on your mind?", validators=[Required()])
-    submit = SubmitField('Submit')
+    body = TextAreaField("内容", validators=[Required("内容不能为空")])
+    submit = SubmitField('提交')
 
 
 class CommentForm(FlaskForm):
-    body = StringField('Enter your comment', validators=[Required()])
-    submit = SubmitField('Submit')
+    body = StringField('评论', validators=[Required()])
+    submit = SubmitField('提交')

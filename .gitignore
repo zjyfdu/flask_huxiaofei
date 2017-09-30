@@ -41,3 +41,6 @@ venv
 
 # pycharm
 .idea
+
+# upload files
+upload
