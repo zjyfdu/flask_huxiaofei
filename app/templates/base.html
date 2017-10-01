@@ -31,9 +31,9 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('course.index') }}">成电</a></li>
-                        <li><a href="{{ url_for('auth.change_password') }}">复旦</a></li>
-                        <li><a href="{{ url_for('auth.change_email_request') }}">东南</a></li>
-                        <li><a href="{{ url_for('auth.logout') }}">杭电</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">复旦</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">东南</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">杭电</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -41,14 +41,14 @@
                         保研 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('course.index') }}">成电</a></li>
-                        <li><a href="{{ url_for('auth.change_password') }}">复旦</a></li>
-                        <li><a href="{{ url_for('auth.change_email_request') }}">东南</a></li>
-                        <li><a href="{{ url_for('auth.logout') }}">杭电</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">成电</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">复旦</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">东南</a></li>
+                        <li><a href="{{ url_for('main.emptypage') }}">杭电</a></li>
                     </ul>
                 </li>
-                <li><a href="{{ url_for('auth.logout') }}">出国</a></li>
-                <li><a href="{{ url_for('auth.logout') }}">微电子培训</a></li>
+                <li><a href="{{ url_for('main.emptypage') }}">出国</a></li>
+                <li><a href="{{ url_for('main.emptypage') }}">微电子培训</a></li>
                 <li><a href="{{ url_for('main.index') }}">论坛</a></li>
 
 
@@ -63,10 +63,25 @@
                         <button class="btn btn-link"><span class="glyphicon glyphicon-search"></span></button>
                     </form>
                 </li>
+                {% if current_user.can(Permission.ADD_CLASS) %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        课程 <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('course.addcourse') }}">添加课程</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
                 {% if current_user.is_authenticated %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        {% if current_user.avatar_url %}
+                        <img style="height: 18px; width: 18px" src="{{ current_user.avatar_url }}">
+                        {% else %}
                         <img src="{{ current_user.gravatar(size=18) }}">
+                        {% endif %}
                         账号 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
@@ -105,7 +120,7 @@
             <dl class="col-sm-6 site-link">
                 <dd><a href="/about">关于我们</a> | <a href="/contact">联系我们</a> | <a href="/hiring">加入我们</a> | <a href="/faq">帮助中心</a> | <a href="/website">网站相关</a> | <a href="/feedback">意见反馈</a></dd>
                 <dd>
-            Copyright © 2011-2017 SegmentFault. 当前呈现版本 17.06.16<br><a href="http://www.miibeian.gov.cn/" rel="nofollow">浙ICP备 15005796号-2</a> &nbsp;
+            Copyright © 2011-2017 用芯学. 当前呈现版本 3.14<br><a href="http://www.miibeian.gov.cn/" rel="nofollow">浙ICP备 15005796号-2</a> &nbsp;
             <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602002000" rel="nofollow">浙公网安备 33010602002000号</a><span class="ml5">杭州堆栈科技有限公司版权所有</span></dd>
 
             </dl>

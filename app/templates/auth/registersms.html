@@ -87,16 +87,14 @@
 
     $("#getVerification").click(function () {
         var tmp=$("#cellphone").val();
-        console.log(tmp);
         $.getJSON("{{ url_for('auth.sendsms')}}"+"?cellphone="+tmp,
             function(data){
                 console.log(data);
-                console.log(data.Message);
                 if(data.Message=='OK') {
                     settime(document.querySelector('#getVerification'));
                 } else{
-                    $(this).text(data.Message);
-                    $(this).setAttribute("disabled", true)
+                    $('#getVerification').text(data.Message);
+                    $('#getVerification').setAttribute("disabled", true)
                 }
 
         });

@@ -1,3 +1,4 @@
+#coding: utf-8
 from datetime import datetime
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -14,7 +15,7 @@ class Permission:
     COMMENT = 0x02
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
-    WRITE_CLASS= 0x10
+    ADD_CLASS= 0x10
     ADMINISTER = 0x80
 
 
@@ -35,7 +36,7 @@ class Role(db.Model):
             'Teacher': (Permission.FOLLOW |
                           Permission.COMMENT |
                           Permission.WRITE_ARTICLES |
-                          Permission.WRITE_CLASS, False),
+                          Permission.ADD_CLASS, False),
             'Administrator': (0xff, False)
         }
         for r in roles:
@@ -59,6 +60,10 @@ class Follow(db.Model):
                             primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+registrations = db.Table('registrations',
+                         db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+                         db.Column('course_id', db.Integer, db.ForeignKey('courses.id'))
+                         )
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -66,6 +71,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     cellphone = db.Column(db.Integer, unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
+    collegeneme = db.Column(db.String(32))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
@@ -75,6 +81,8 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
+    avatar_url = db.Column(db.String(128))
+    teacher_date = db.Column(db.DateTime()) #申请成为老师的时间
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
@@ -87,6 +95,11 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    studentscourses = db.relationship('Course',
+                                      secondary=registrations,
+                                      backref=db.backref('students', lazy='dynamic'),
+                                      lazy='dynamic')
+    teachercourse = db.relationship('Course', backref='teacher', lazy='dynamic')
 
     @staticmethod
     def fuck_me():
@@ -282,7 +295,6 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
@@ -302,17 +314,44 @@ class Post(db.Model):
             db.session.add(p)
             db.session.commit()
 
+#     @staticmethod
+#     def on_changed_body(target, value, oldvalue, initiator):
+#         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+#                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+#                         'h1', 'h2', 'h3', 'p']
+#         target.body_html = bleach.linkify(bleach.clean(
+#             markdown(value, output_format='html'),
+#             tags=allowed_tags, strip=True))
+#
+# db.event.listen(Post.body, 'set', Post.on_changed_body)
+
+class Course(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.Integer, primary_key=True)
+    abstract = db.Column(db.String(256))
+    introduction = db.Column(db.Text)
+    price = db.Column(db.Integer)
+    mode = db.Column(db.String(32))
+    img_url = db.Column(db.String(128))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True))
+    def generate_fake(count=100):
+        from random import seed, randint
+        import forgery_py
 
-db.event.listen(Post.body, 'set', Post.on_changed_body)
-
+        seed()
+        user_count = User.query.count()
+        for i in range(count):
+            u = User.query.offset(randint(0, user_count - 1)).first()
+            p = Post(abstract=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
+                     price=randint(0, 1000),
+                     mode='视频直播',
+                     timestamp=forgery_py.date.date(True),
+                     author=u)
+            db.session.add(p)
+            db.session.commit()
 
 class Comment(db.Model):
     __tablename__ = 'comments'

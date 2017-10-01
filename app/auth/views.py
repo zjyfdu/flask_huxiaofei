@@ -1,5 +1,6 @@
 #coding: utf-8
-from flask import render_template, redirect, request, url_for, flash, jsonify
+import flask_bootstrap
+from flask import render_template, redirect, request, url_for, flash, jsonify, current_app
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import auth
@@ -9,6 +10,8 @@ from ..email import send_email
 from ..lib.send_sms import send_sms
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm, PhoneRegistrationForm
+from PIL import Image
+from werkzeug import secure_filename
 
 
 @auth.before_app_request
@@ -193,3 +196,25 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('main.index'))
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+@auth.route('/edit-avatar', methods=['GET', 'POST'])
+@login_required
+def change_avatar():
+    if request.method == 'POST':
+        file = request.files['file']
+        size = (256, 256)
+        im = Image.open(file)
+        im.thumbnail(size)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            im.save(os.path.join(current_app.static_folder, 'avatar', filename))
+            current_user.avatar_url = url_for('static', filename='%s/%s' % ('avatar', filename))
+            db.session.add(current_user)
+            flash(u'头像修改成功')
+            return redirect(url_for('.user', username=current_user.username))
+    return render_template('auth/change_avatar.html')

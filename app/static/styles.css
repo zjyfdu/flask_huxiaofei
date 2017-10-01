@@ -178,14 +178,6 @@ div.btn {
     font-size: smaller;
 }
 
-/*ul#course-sub-info > li > p {*/
-    /*font-size: small;*/
-/*}*/
-
-/*.jumbotron {*/
-    /*background-image: url("http://bpic.588ku.com/back_pic/02/67/58/81578e331cc7693.jpg");*/
-/*}*/
-
 .class-btn {
     text-align: center;
     width: 100%;
@@ -199,5 +191,3 @@ div.navbar a {
 div.navbar {
 	background-color: #F5F5F5;
 }
-
-.footer{position:absolute;bottom:0;}

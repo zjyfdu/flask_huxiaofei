@@ -1,6 +1,6 @@
 #coding: utf-8
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+    current_app, make_response, jsonify
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
@@ -12,6 +12,10 @@ import os
 import datetime
 import random
 
+@main.route('/empty')
+def emptypage():
+    imgnum = random.randint(1, 2)
+    return render_template('empty.html', imgurl=url_for('static', filename='coderimg/'+str(imgnum)+'.jpg'))
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -35,9 +39,8 @@ def index():
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    return render_template('index.html', form=form, posts=posts,
+    return render_template('main/index.html', form=form, posts=posts,
                            show_followed=show_followed, pagination=pagination)
-
 
 @main.route('/user/<username>')
 def user(username):
@@ -47,9 +50,8 @@ def user(username):
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    return render_template('user.html', user=user, posts=posts,
+    return render_template('main/user.html', user=user, posts=posts,
                            pagination=pagination)
-
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -65,7 +67,7 @@ def edit_profile():
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', form=form)
+    return render_template('main/edit_profile.html', form=form)
 
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
@@ -92,8 +94,18 @@ def edit_profile_admin(id):
     form.name.data = user.name
     form.location.data = user.location
     form.about_me.data = user.about_me
-    return render_template('edit_profile.html', form=form, user=user)
+    return render_template('main/edit_profile.html', form=form, user=user)
 
+@main.route('/apply_for_professor', methods=['GET', 'POST'])
+@login_required
+def apply_for_professor():
+    try:
+        current_user.teacher_date=datetime.datetime.now()
+        db.session.add(current_user)
+        flash('申请成功！管理员13122358292将会和您联系。')
+        return jsonify({'Message': 'OK'})
+    except:
+        return jsonify({'Message': '我觉得不行'})
 
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
@@ -114,7 +126,7 @@ def post(id):
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form,
+    return render_template('main/post.html', posts=[post], form=form,
                            comments=comments, pagination=pagination)
 
 
@@ -132,7 +144,7 @@ def edit(id):
         flash('The post has been updated.')
         return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
-    return render_template('edit_post.html', form=form)
+    return render_template('main/edit_post.html', form=form)
 
 
 @main.route('/follow/<username>')
@@ -179,7 +191,7 @@ def followers(username):
         error_out=False)
     follows = [{'user': item.follower, 'timestamp': item.timestamp}
                for item in pagination.items]
-    return render_template('followers.html', user=user, title="Followers of",
+    return render_template('main/followers.html', user=user, title="Followers of",
                            endpoint='.followers', pagination=pagination,
                            follows=follows)
 
@@ -196,7 +208,7 @@ def followed_by(username):
         error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp}
                for item in pagination.items]
-    return render_template('followers.html', user=user, title="Followed by",
+    return render_template('main/followers.html', user=user, title="Followed by",
                            endpoint='.followed_by', pagination=pagination,
                            follows=follows)
 
@@ -226,7 +238,7 @@ def moderate():
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('moderate.html', comments=comments,
+    return render_template('main/moderate.html', comments=comments,
                            pagination=pagination, page=page)
 
 
