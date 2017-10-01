@@ -105,6 +105,7 @@ class User(UserMixin, db.Model):
     def fuck_me():
         from sqlalchemy.exc import IntegrityError
         from datetime import datetime
+        role = Role.query.filter_by(name='Teacher').first()
         u = User(email='zhaijymail@163.com',
              cellphone='13122358292',
              username='zhaijy',
@@ -113,7 +114,8 @@ class User(UserMixin, db.Model):
              name='zhaijy',
              location='shanghai',
              about_me='fuck me',
-             member_since=datetime.now())
+             member_since=datetime.now(),
+             role=role)
         db.session.add(u)
         try:
             db.session.commit()
@@ -328,6 +330,7 @@ class Post(db.Model):
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(32))
     abstract = db.Column(db.String(256))
     introduction = db.Column(db.Text)
     price = db.Column(db.Integer)
@@ -335,6 +338,9 @@ class Course(db.Model):
     img_url = db.Column(db.String(128))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<User %r>' % self.title
 
     @staticmethod
     def generate_fake(count=100):
