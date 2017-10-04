@@ -71,7 +71,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     cellphone = db.Column(db.Integer, unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    collegeneme = db.Column(db.String(32))
+    collegename = db.Column(db.String(32))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
@@ -114,6 +114,7 @@ class User(UserMixin, db.Model):
              name='zhaijy',
              location='shanghai',
              about_me='fuck me',
+             collegename='chendian',
              member_since=datetime.now(),
              role=role)
         db.session.add(u)
@@ -155,13 +156,10 @@ class User(UserMixin, db.Model):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
-            if self.email == current_app.config['FLASKY_ADMIN']:
-                self.role = Role.query.filter_by(permissions=0xff).first()
-            if self.role is None:
-                self.role = Role.query.filter_by(default=True).first()
-        if self.email is not None and self.avatar_hash is None:
+            self.role = Role.query.filter_by(default=True).first()
+        if self.username is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
-                self.email.encode('utf-8')).hexdigest()
+                self.username.encode('utf-8')).hexdigest()
         self.followed.append(Follow(followed=self))
 
     @property
@@ -225,8 +223,6 @@ class User(UserMixin, db.Model):
         if self.query.filter_by(email=new_email).first() is not None:
             return False
         self.email = new_email
-        self.avatar_hash = hashlib.md5(
-            self.email.encode('utf-8')).hexdigest()
         db.session.add(self)
         return True
 

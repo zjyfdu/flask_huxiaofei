@@ -6,7 +6,7 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment
+from ..models import Permission, Role, User, Post, Comment, Course
 from ..decorators import admin_required, permission_required
 import os
 import datetime
@@ -46,11 +46,15 @@ def index():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
-    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
+    if user.role.name == 'Teacher':
+        query = user.teachercourse
+    else:
+        query = user.studentscourses
+    pagination = query.order_by(Course.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
-    posts = pagination.items
-    return render_template('main/user.html', user=user, posts=posts,
+    courses = pagination.items
+    return render_template('main/user.html', user=user, courses=courses,
                            pagination=pagination)
 
 @main.route('/edit-profile', methods=['GET', 'POST'])

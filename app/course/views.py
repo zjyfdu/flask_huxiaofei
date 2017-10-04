@@ -2,7 +2,7 @@ from flask import render_template, redirect, request, url_for, flash, current_ap
 import flask_bootstrap
 from . import course
 from .. import db
-from ..models import User, Course
+from ..models import User, Course, Role
 from .forms import CourseForm
 from PIL import Image
 from flask_login import current_user
@@ -21,14 +21,40 @@ from werkzeug import secure_filename
 #                 and request.endpoint != 'static':
 #             return redirect(url_for('auth.unconfirmed'))
 
-
+# @main.route('/', methods=['GET', 'POST'])
+# def index():
+#
+#     page = request.args.get('page', 1, type=int)
+#     show_followed = False
+#     if current_user.is_authenticated:
+#         show_followed = bool(request.cookies.get('show_followed', ''))
+#     if show_followed:
+#         query = current_user.followed_posts
+#     else:
+#         query = Post.query
+#     pagination = query.order_by(Post.timestamp.desc()).paginate(
+#         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+#         error_out=False)
+#     posts = pagination.items
+#     return render_template('main/college.html', form=form, posts=posts,
+#                            show_followed=show_followed, pagination=pagination)
 @course.route('/')
 def index():
-    return render_template('course/index.html')
+    return redirect(url_for('course.college', collegename='chendian'))
+
+@course.route('/college/<string:collegename>')
+def college(collegename):
+    page = request.args.get('page', 1, type=int)
+    teacher_role = Role.query.filter_by(name='Teacher').first_or_404()
+    query = User.query.filter_by(role=teacher_role, collegename=collegename).filter(User.teachercourse)
+    pagination = query.paginate(page, per_page=5, error_out=False)
+    teachers = pagination.items
+    return render_template('course/college.html', teachers=teachers, pagination=pagination)
 
 @course.route('/class/<int:id>', methods=['GET', 'POST'])
 def classes(id):
-    return render_template('course/class.html', id=id)
+    course = Course.query.get_or_404(id)
+    return render_template('course/class.html', course=course)
 
 @course.route('/addcourse', methods=['GET', 'POST'])
 def addcourse():
@@ -48,7 +74,7 @@ def addcourse():
             im.thumbnail(size)
             filename = secure_filename(file.filename)
             im.save(os.path.join(current_app.static_folder, 'courseimg', filename))
-            course.img_url = url_for('static', filename='%s/%s' % ('avatar', filename))
+            course.img_url = url_for('static', filename='%s/%s' % ('courseimg', filename))
         db.session.add(course)
         try:
             db.session.commit()

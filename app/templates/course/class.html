@@ -6,19 +6,19 @@
 <div class="jumbotron" style="padding: 0px;">
     <div class="container course-intro">
         <div class="col-md-8">
-            <h1>这里写课程名字</h1>
-            <p>这里写个课程的介绍</p>
+            <h1>{{ course.title }}</h1>
+            <p>{{ course.abstract }}</p>
             <ul style="padding-left: 0px" id="course-sub-info">
                 <li>
-                    <h3 class="meta-value">直播</h3>
+                    <h3 class="meta-value">{{ course.mode }}</h3>
                     <p>教学模式</p>
                 </li>
                 <li>
-                    <h3 class="meta-value">558</h3>
+                    <h3 class="meta-value">{{ course.students.count() }}</h3>
                     <p>学习人数</p>
                 </li>
                 <li>
-                    <h3 class="meta-value">免费<del>￥0.0</del></h3>
+                    <h3 class="meta-value">¥{{ course.price }}</h3>
                     <p>价格</p>
                 </li>
             </ul>
@@ -34,68 +34,35 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="javascript:void(0)">课程介绍</a></li>
         <li><a href="javascript:void(0)">课程资料</a></li>
-        <li><a href="javascript:void(0)">评论</a></li>
+        <li><a href="javascript:void(0)">我要提问</a></li>
     </ul>
     <div class="notice-content">
-            <!-- 第一个内容模块 -->
-            <div class="module">
-
-<p><img alt="" src="http://wx.doc.kuakao.com/editor/18113/20170919/086903cc-889b-422b-856f-48416acdba67.jpg" style="height: auto; width: 100%;"></p>
-
-<p><img alt="" src="http://wx.doc.kuakao.com/editor/18113/20170908/4ffdf793-8640-4c69-9ef1-cfcb3f48f505.jpg" style="height: auto; width: 100%;"></p>
-            </div>
-            <div class="module">
-                <ul>
-                    <li><span>[<a href="#">通知</a>]</span><a href="#">"滥发"即将换新</a></li>
-                    <li><span>[<a href="#">通知</a>]</span><a href="#">比特币严管啦！</a></li>
-                    <li><span>[<a href="#">通知</a>]</span><a href="#">禁发商品名录!</a></li>
-                    <li><span>[<a href="#">通知</a>]</span><a href="#">商品属性限制</a></li>
-                </ul>
-            </div>
-            <div class="module">
-                <ul>
-                    <li><span>[<a href="#">聚焦</a>]</span><a href="#">金牌卖家再启航</a></li>
-                    <li><span>[<a href="#">通知</a>]</span><a href="#">橱窗规则升级啦</a></li>
-                    <li><span>[<a href="#">话题</a>]</span><a href="#">又爱又恨优惠劵</a></li>
-                    <li><span>[<a href="#">工具</a>]</span><a href="#">购后送店铺红</a></li>
-                </ul>
-            </div>
-            <div class="module">
-                <ul>
-                    <li><a href="#">个人重要信息要管牢</a></li>
-                    <li><a href="#">卖家防范红包欺诈提醒！</a></li>
-                    <li><a href="#">更换收货地址的陷阱</a></li>
-                    <li><a href="#">注意骗子的技术升级了</a></li>
-                </ul>
-            </div>
-            <div class="module">
-
-            </div>
+        <div class="module">
+            {{ course.introduction|safe }}
         </div>
+        <div class="module">
+            <h1>TODO</h1>
+        </div>
+        <div class="module">
+            <h1>TODO</h1>
+        </div>
+    </div>
 </div>
 </div>
 
 <div class="col-md-3">
 <button class="btn btn-primary class-btn">加入学习</button>
 <div class="teacher">
-                <div class="title-wrap clear">
-                    <span class="title">讲师</span>
-                    <span class="page">
-                        <i class="now">1</i><i class="split-line">/</i><i class="page-num">1</i>
-                        <img src="/images/coursedetail/jiantou_01.png" class="prev" alt="">
-                        <img src="/images/coursedetail/jiantou_02.png" class="next" alt="">
-                    </span>
-                </div>
-                <div class="wrap-box clear" style="width: 246px; transform: translateX(0px); transition: all 0.3s ease;">
-                <div class="teacher-introduce-wrap"><div class="teacher-introduce"><div class="name clear" data-id="85854"><span class="headpic">    <img src="/images/teachers.png" alt="" width="100%" height="100%"></span><span>张美琪</span></div><p class="content">这位老师比较懒，什么都没有留下^_^;</p></div><div class="teacher-introduce"><div class="name clear" data-id="85848"><span class="headpic">    <img src="http://wx.doc.kuakao.com/headpic/18113/20170711/ff74bc5a-acf1-4639-9582-e548dd8f888e.jpg" alt="" width="100%" height="100%"></span><span>王秀亮</span></div><p class="content">王秀亮老师
-
-业界金牌辅导老师
-
-▶从业10余年，自2011年以来助力100多位考生成为北大、清华、复旦、五道口等一流名校MBAers。
-
-▶从院校规划到面试辅导，其逻辑严谨，注重细节，理论与案例相结合，善于从细微处诠释问题。
-</p></div></div></div>
-            </div>
+    <div>
+        <h4>老师</h4><hr>
+        <h4>
+        <a href="{{ url_for('main.user', username=course.teacher.username) }}">
+            <img id="teacher-img" class="img-rounded" src="{% if course.teacher.avatar_url %}{{ course.teacher.avatar_url }}{% else %}{{ course.teacher.gravatar() }}{% endif %}">
+            {{ course.teacher.name }}</a>
+        </h4>
+        <p>{{ course.teacher.about_me }}</p>
+    </div>
+</div>
 </div>
 <!-- Go to www.addthis.com/dashboard to customize your tools -->
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-575e4828bfd1c105"></script>

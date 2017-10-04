@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}考研{% endblock %}
+
+{% block page_content %}
+<div class="col-md-9">
+{% for teacher in teachers %}
+    <article class="article">
+        <!--老师的信息-->
+        <h3>
+        <a href="{{ url_for('main.user', username=teacher.username) }}">
+            <img id="teacher-img" class="img-rounded" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
+            {{ teacher.name }}</a>
+        </h3>
+        <!--老师的一些标签-->
+{#        <span class="label label-default" id="teacher-tag">#}
+{#            <span class="glyphicon glyphicon-leaf"></span> test#}
+{#        </span>#}
+{#        <span class="label label-default" id="teacher-tag">#}
+{#            <span class="glyphicon glyphicon-leaf"></span> test#}
+{#        </span>#}
+{#        <span class="label label-default" id="teacher-tag">#}
+{#            <span class="glyphicon glyphicon-leaf"></span> test#}
+{#        </span>#}
+        <!--老师的介绍-->
+        <p>{{ teacher.about_me }}</p>
+        <!--下面是课程-->
+        <div class="row">
+            {% for course in teacher.teachercourse %}
+            <div class="teacher-course col-md-3">
+                <div class="pic">
+                    <a href="{{ url_for('course.classes', id=course.id) }}">
+                        <img id="course-img" src="{% if course.img_url %}{{ course.img_url }}{% else %}{{ url_for('static', filename='courseimg/default.png') }}{% endif %}" alt="" width="100%" height="100%">
+                    </a>
+                </div>
+                <div>
+                    <p><a href="{{ url_for('course.classes', id=1) }}">{{ course.title }}</a></p>
+                    <div>
+                        <span>￥{{ course.price }}</span>
+                        <span class="pull-right"><span class="glyphicon glyphicon-user "></span>  {{ course.students.count() }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </article>
+{% endfor %}
+</div>
+<div class="col-md-3">
+
+    <article class="article">
+        <h5><span class="glyphicon glyphicon-leaf" aria-hidden="true"></span>写点提示啊什么的</h5>
+
+        <ul>
+            <li class="presentation"><a href="#" ><p>这里写点啥<span class="badge text-right" style="float:right">10</span></p></a></li>
+        </ul>
+    </article>
+
+</div>
+
+{% endblock %}
