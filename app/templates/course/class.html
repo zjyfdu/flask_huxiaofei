@@ -51,9 +51,10 @@
 </div>
 
 <div class="col-md-3">
-<button class="btn btn-primary class-btn">加入学习</button>
+<a class="btn btn-primary class-btn" href="#">加入学习</a>
 {% if current_user == course.teacher %}
 <a class="btn btn-danger class-btn" href="{{ url_for('course.editcourse', id=course.id) }}">编辑课程</a>
+<a class="btn btn-danger class-btn" href="{{ url_for('course.removecourse', id=course.id) }}">编辑课程</a>
 {% endif %}
 <div class="teacher">
     <div>

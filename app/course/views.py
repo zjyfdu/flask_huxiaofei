@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, redirect, request, url_for, flash, current_app, abort
-import flask_bootstrap
 from . import course
 from .. import db
 from ..models import User, Course, Role, Permission
@@ -93,3 +92,18 @@ def editcourse(id):
     form.price.data = course.price
     form.mode.data = course.mode
     return render_template('course/editcourse.html', form=form)
+
+@course.route('/remove/<int:id>', methods=['GET', 'POST'])
+@login_required
+def removecourse(id):
+    course = Course.query.get_or_404(id)
+    if current_user != course.teacher and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    db.session.delete(course)
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
+    flash('课程已删除')
+    return redirect(url_for('course.college', collegename=current_user.collegename))
