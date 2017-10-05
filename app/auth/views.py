@@ -12,6 +12,7 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm, PhoneRegistrationForm
 from PIL import Image
 from werkzeug import secure_filename
+import os
 
 
 @auth.before_app_request
@@ -216,5 +217,5 @@ def change_avatar():
             current_user.avatar_url = url_for('static', filename='%s/%s' % ('avatar', filename))
             db.session.add(current_user)
             flash(u'头像修改成功')
-            return redirect(url_for('.user', username=current_user.username))
+            return redirect(url_for('main.user', username=current_user.username))
     return render_template('auth/change_avatar.html')
