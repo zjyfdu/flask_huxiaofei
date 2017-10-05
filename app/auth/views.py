@@ -1,5 +1,4 @@
 #coding: utf-8
-import flask_bootstrap
 from flask import render_template, redirect, request, url_for, flash, jsonify, current_app
 from flask_login import login_user, logout_user, login_required, \
     current_user
@@ -46,14 +45,12 @@ def login():
         flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
 
-
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('main.index'))
-
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
@@ -108,7 +105,6 @@ def confirm(token):
         flash('The confirmation link is invalid or has expired.')
     return redirect(url_for('main.index'))
 
-
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
@@ -117,7 +113,6 @@ def resend_confirmation():
                'auth/email/confirm', user=current_user, token=token)
     flash('A new confirmation email has been sent to you by email.')
     return redirect(url_for('main.index'))
-
 
 @auth.route('/change-password', methods=['GET', 'POST'])
 @login_required
@@ -132,7 +127,6 @@ def change_password():
         else:
             flash('Invalid password.')
     return render_template("auth/change_password.html", form=form)
-
 
 @auth.route('/reset', methods=['GET', 'POST'])
 def password_reset_request():

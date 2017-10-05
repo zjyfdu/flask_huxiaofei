@@ -12,7 +12,7 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = 'YXX'
     MAIL_PASSWORD = '3020282zjyd'
-    FLASKY_MAIL_SUBJECT_PREFIX = '[TravelNow]'
+    FLASKY_MAIL_SUBJECT_PREFIX = '[YXX]'
     FLASKY_MAIL_SENDER = 'YXX <geo_master@163.com>'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     FLASKY_POSTS_PER_PAGE = 5
@@ -45,6 +45,5 @@ config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-
     'default': DevelopmentConfig
 }
