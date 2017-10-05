@@ -18,16 +18,13 @@ migrate = Migrate(app, db)
 def renewdb():
     db.drop_all()
     db.create_all()
-
-def make_shell_context():
     Role.insert_roles()
     User.fuck_me()
+
+def make_shell_context():
     return dict(app=app, db=db, User=User, Follow=Follow, Role=Role,
                 Permission=Permission, Post=Post, Comment=Comment, Course=Course)
 manager.add_command("shell", Shell(make_context=make_shell_context))
-manager.add_command('db', MigrateCommand)
-
-
 
 if __name__ == '__main__':
     manager.run()

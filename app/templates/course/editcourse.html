@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky - Confirm your account{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>编辑课程</h1>
+</div>
+<div class="col-md-9">
+    {{ wtf.quick_form(form, enctype="multipart/form-data")}}
+</div>
+{% endblock %}

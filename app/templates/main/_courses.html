@@ -2,7 +2,7 @@
     {% for course in courses %}
         <div class="user-course">
             <div class="user-course-pic">
-                <img id="course-img" src="{% if course.img_url %}{{ course.img_url }}{% else %}{{ url_for('static', filename='courseimg/default.png') }}{% endif %}" alt="" width="100%" height="100%">
+                <img id="course-img" src="{% if course.img_url %}{{ course.img_url }}{% else %}{{ url_for('static', filename='img/coursedefault.png') }}{% endif %}" alt="" width="100%" height="100%">
             </div>
             <div class="user-course-content">
                 <h4><a href="{{ url_for('course.classes', id=course.id) }}">{{ course.title }}</a></h4>
