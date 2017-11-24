@@ -7,7 +7,7 @@ from ..models import User
 
 
 class LoginForm(FlaskForm):
-    email = StringField(u'邮箱或者手机号', validators=[Required()])
+    email = StringField(u'手机号', validators=[Required()])
     password = PasswordField(u'密码', validators=[Required()])
     remember_me = BooleanField('记住登陆')
     submit = SubmitField('立即登陆')
@@ -68,11 +68,29 @@ class ChangePasswordForm(FlaskForm):
     submit = SubmitField('确定')
 
 
-class PasswordResetRequestForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
-                                             Email()])
-    submit = SubmitField('Reset Password')
+# class PasswordResetRequestForm(FlaskForm):
+#     email = StringField('Email', validators=[Required(), Length(1, 64),
+#                                              Email()])
+#     submit = SubmitField('Reset Password')
 
+
+class PasswordResetRequestForm(FlaskForm):
+    cellphone = IntegerField(u'手机号', validators=[Required(), NumberRange(13000000000, 19999999999)])
+    verificationcode = StringField(u'验证码', validators=[Required(), Regexp('^\d{1,6}$')])
+    password = PasswordField(u'新密码', validators=[
+        Required(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField(u'确认新密码', validators=[Required()])
+    submit = SubmitField(u'确定')
+
+    def validate_cellphone(self, field):
+        if not User.query.filter_by(cellphone=field.data).first():
+            raise ValidationError(u'手机号没有注册过，直接注册新账号。')
+
+    def validate_verificationcode(self, field):
+        code = int(self.cellphone.data)
+        code = str(code%1048577)[:6]
+        if field.data!=code:
+            raise ValidationError(u'验证码错误。')
 
 class PasswordResetForm(FlaskForm):
     email = StringField('Email', validators=[Required(), Length(1, 64),

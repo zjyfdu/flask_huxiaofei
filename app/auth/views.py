@@ -134,34 +134,30 @@ def password_reset_request():
         return redirect(url_for('main.index'))
     form = PasswordResetRequestForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(cellphone=form.cellphone.data).first()
         if user:
-            token = user.generate_reset_token()
-            send_email(user.email, 'Reset Your Password',
-                       'auth/email/reset_password',
-                       user=user, token=token,
-                       next=request.args.get('next'))
-        flash('An email with instructions to reset your password has been '
-              'sent to you.')
+            user.password = form.password.data
+            db.session.add(user)
+            flash(u'密码已重置，请重新登陆')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
 
-
-@auth.route('/reset/<token>', methods=['GET', 'POST'])
-def password_reset(token):
-    if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
-    form = PasswordResetForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None:
-            return redirect(url_for('main.index'))
-        if user.reset_password(token, form.password.data):
-            flash('Your password has been updated.')
-            return redirect(url_for('auth.login'))
-        else:
-            return redirect(url_for('main.index'))
-    return render_template('auth/reset_password.html', form=form)
+#
+# @auth.route('/reset/<token>', methods=['GET', 'POST'])
+# def password_reset(token):
+#     if not current_user.is_anonymous:
+#         return redirect(url_for('main.index'))
+#     form = PasswordResetForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(email=form.email.data).first()
+#         if user is None:
+#             return redirect(url_for('main.index'))
+#         if user.reset_password(token, form.password.data):
+#             flash('Your password has been updated.')
+#             return redirect(url_for('auth.login'))
+#         else:
+#             return redirect(url_for('main.index'))
+#     return render_template('auth/reset_password.html', form=form)
 
 
 @auth.route('/change-email', methods=['GET', 'POST'])
