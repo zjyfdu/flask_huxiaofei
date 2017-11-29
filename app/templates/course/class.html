@@ -6,20 +6,20 @@
 <div class="jumbotron" style="padding: 0px;">
     <div class="container course-intro">
         <div class="col-md-8">
-            <h1>{{ course.title }}</h1>
+            <h1><small>{{ course.title }}</small></h1>
             <p>{{ course.abstract }}</p>
             <ul style="padding-left: 0px" id="course-sub-info">
                 <li>
                     <h3 class="meta-value">{{ course.mode }}</h3>
-                    <p>教学模式</p>
+                    <p><small>教学模式</small></p>
                 </li>
                 <li>
                     <h3 class="meta-value">{{ course.students.count() }}</h3>
-                    <p>学习人数</p>
+                    <p><small>学习人数</small></p>
                 </li>
                 <li>
                     <h3 class="meta-value">¥{{ course.price }}</h3>
-                    <p>价格</p>
+                    <p><small>价格</small></p>
                 </li>
             </ul>
         </div>
@@ -60,7 +60,7 @@
 {% if course not in current_user.studentscourses %}
 <a class="btn btn-primary class-btn" href="{{ url_for('course.joinincourse', id=course.id) }}">加入学习</a>
 {% endif %}
-{% if current_user == course.teacher %}
+{% if current_user == course.teacher or current_user.is_administrator() %}
 <a class="btn btn-danger class-btn" href="{{ url_for('course.editcourse', id=course.id) }}">编辑课程</a>
 <a class="btn btn-danger class-btn" href="{{ url_for('course.removecourse', id=course.id) }}">删除课程</a>
 {% endif %}

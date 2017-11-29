@@ -23,7 +23,8 @@
         </a>
         </div>
         {% endif %}
-        <div>{{ subject.about_subject | safe }}</div>
+        <div id="wrap{{ subject.id }}" class="wrap">{{ subject.about_subject | safe }}</div>
+        <div id="read-more{{ subject.id }}" class="read-more"></div>
 
 
         <!--下面是课程-->
@@ -64,5 +65,39 @@
     </article>
 
 </div>
+
+<style>
+.wrap{position: relative;overflow: hidden;}
+.read-more a{padding-right: 22px;background: url() no-repeat 100% 50%;font-weight: bold;text-decoration: none;}
+.read-more a:hover{color: #000;}
+</style>
+<script type="text/javascript">
+{% for subject in subjects %}
+$(function(){
+ var slideHeight = 300; // px
+ var defHeight = $('#wrap{{ subject.id }}').height();
+ if(defHeight >= slideHeight){
+  $('#wrap{{ subject.id }}').css('height' , slideHeight + 'px');
+  $('#read-more{{ subject.id }}').append('<a href="#">查看更多</a>');
+  $('#read-more{{ subject.id }} a').click(function(){
+   var curHeight = $('#wrap{{ subject.id }}').height();
+   if(curHeight == slideHeight){
+    $('#wrap{{ subject.id }}').animate({
+     height: defHeight
+    }, "normal");
+    $('#read-more{{ subject.id }} a').html('隐藏');
+   }else{
+    $('#wrap{{ subject.id }}').animate({
+     height: slideHeight
+    }, "normal");
+    $('#read-more{{ subject.id }} a').html('查看更多');
+   }
+   return false;
+  });
+ }
+});
+{% endfor %}
+</script>
+
 
 {% endblock %}

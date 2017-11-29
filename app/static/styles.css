@@ -211,3 +211,22 @@ div.user-course-content {
 div.user-course-footer {
     text-align: right;
 }
+
+.jumbotron li > h3{
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.jumbotron li > p{
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.jumbotron h1 small {
+    color: black;
+}
+
+.jumbotron {
+    /*background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);*/
+    background-image: url(http://ot0uaqt93.bkt.clouddn.com/17-11-29/6301939.jpg);
+}

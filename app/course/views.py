@@ -83,7 +83,8 @@ def addcourse():
 @login_required
 def joinincourse(id):
     course = Course.query.get_or_404(id)
-    current_user.studentscourses.append(course)
+    if course not in current_user.studentscourses:
+        current_user.studentscourses.append(course)
     db.session.add(current_user)
     return redirect(url_for('course.classes', id=id))
 
