@@ -59,3 +59,7 @@ class PostForm(FlaskForm):
 class CommentForm(FlaskForm):
     body = StringField('评论', validators=[Required()])
     submit = SubmitField('提交')
+
+class ProfessorForm(FlaskForm):
+    apply_message = StringField('申请信息')
+    submit = SubmitField('提交')

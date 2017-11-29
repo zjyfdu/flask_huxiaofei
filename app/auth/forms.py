@@ -1,28 +1,28 @@
 #-*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo, NumberRange
+from wtforms.validators import Length, Email, Regexp, EqualTo, NumberRange, DataRequired
 from wtforms import ValidationError
 from ..models import User
 
 
 class LoginForm(FlaskForm):
-    email = StringField(u'手机号', validators=[Required()])
-    password = PasswordField(u'密码', validators=[Required()])
+    email = StringField(u'用户名或手机号', validators=[DataRequired()])
+    password = PasswordField(u'密码', validators=[DataRequired()])
     remember_me = BooleanField('记住登陆')
     submit = SubmitField('立即登陆')
 
 
 class RegistrationForm(FlaskForm):
-    email = StringField('邮箱', validators=[Required(), Length(1, 64),
+    email = StringField('邮箱', validators=[DataRequired(), Length(1, 64),
                                            Email()])
     username = StringField('用户名', validators=[
-        Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+        DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
                                           'numbers, dots or underscores')])
     password = PasswordField('密码', validators=[
-        Required(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('确认密码', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField('确认密码', validators=[DataRequired()])
     submit = SubmitField('注册')
 
     def validate_email(self, field):
@@ -34,15 +34,15 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('用户名已经被占用了。')
 
 class PhoneRegistrationForm(FlaskForm):
-    cellphone = IntegerField(u'手机号', validators=[Required(), NumberRange(13000000000, 19999999999)])
-    verificationcode = StringField(u'验证码', validators=[Required(), Regexp('^\d{1,6}$')])
+    cellphone = IntegerField(u'手机号', validators=[DataRequired(), NumberRange(13000000000, 19999999999)])
+    verificationcode = StringField(u'验证码', validators=[DataRequired(), Regexp('^\d{1,6}$')])
     username = StringField(u'用户名', validators=[
-        Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+        DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
                                           'numbers, dots or underscores')])
     password = PasswordField(u'密码', validators=[
-        Required(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField(u'确认密码', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField(u'确认密码', validators=[DataRequired()])
     submit = SubmitField(u'注册')
 
     def validate_cellphone(self, field):
@@ -61,25 +61,25 @@ class PhoneRegistrationForm(FlaskForm):
 
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('旧密码', validators=[Required()])
+    old_password = PasswordField('旧密码', validators=[DataRequired()])
     password = PasswordField('新密码', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('确认新密码', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('确认新密码', validators=[DataRequired()])
     submit = SubmitField('确定')
 
 
 # class PasswordResetRequestForm(FlaskForm):
-#     email = StringField('Email', validators=[Required(), Length(1, 64),
+#     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
 #                                              Email()])
 #     submit = SubmitField('Reset Password')
 
 
 class PasswordResetRequestForm(FlaskForm):
-    cellphone = IntegerField(u'手机号', validators=[Required(), NumberRange(13000000000, 19999999999)])
-    verificationcode = StringField(u'验证码', validators=[Required(), Regexp('^\d{1,6}$')])
+    cellphone = IntegerField(u'手机号', validators=[DataRequired(), NumberRange(13000000000, 19999999999)])
+    verificationcode = StringField(u'验证码', validators=[DataRequired(), Regexp('^\d{1,6}$')])
     password = PasswordField(u'新密码', validators=[
-        Required(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField(u'确认新密码', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField(u'确认新密码', validators=[DataRequired()])
     submit = SubmitField(u'确定')
 
     def validate_cellphone(self, field):
@@ -93,11 +93,11 @@ class PasswordResetRequestForm(FlaskForm):
             raise ValidationError(u'验证码错误。')
 
 class PasswordResetForm(FlaskForm):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                              Email()])
     password = PasswordField('New Password', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm password', validators=[Required()])
+        DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('Confirm password', validators=[DataRequired()])
     submit = SubmitField('Reset Password')
 
     def validate_email(self, field):
@@ -106,9 +106,9 @@ class PasswordResetForm(FlaskForm):
 
 
 class ChangeEmailForm(FlaskForm):
-    email = StringField('New Email', validators=[Required(), Length(1, 64),
+    email = StringField('New Email', validators=[DataRequired(), Length(1, 64),
                                                  Email()])
-    password = PasswordField('Password', validators=[Required()])
+    password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Update Email Address')
 
     def validate_email(self, field):

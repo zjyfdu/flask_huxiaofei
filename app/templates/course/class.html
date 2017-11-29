@@ -32,16 +32,22 @@
 <div class="col-md-9" style="padding-left: 0px;">
 <div>
     <ul class="nav nav-tabs">
+        {% if course in current_user.studentscourses %}
+        <li class="active"><a href="javascript:void(0)">课程资料</a></li>
+        <li><a href="javascript:void(0)">课程介绍</a></li>
+        {% else %}
         <li class="active"><a href="javascript:void(0)">课程介绍</a></li>
-        <li><a href="javascript:void(0)">课程资料</a></li>
+        {% endif %}
         <li><a href="javascript:void(0)">我要提问</a></li>
     </ul>
     <div class="notice-content">
+        {% if course in current_user.studentscourses %}
+        <div class="module">
+            {{ course.introduction2|safe }}
+        </div>
+        {% endif %}
         <div class="module">
             {{ course.introduction|safe }}
-        </div>
-        <div class="module">
-            <h1>TODO</h1>
         </div>
         <div class="module">
             <h1>TODO</h1>
@@ -51,7 +57,9 @@
 </div>
 
 <div class="col-md-3">
-<a class="btn btn-primary class-btn" href="#">加入学习</a>
+{% if course not in current_user.studentscourses %}
+<a class="btn btn-primary class-btn" href="{{ url_for('course.joinincourse', id=course.id) }}">加入学习</a>
+{% endif %}
 {% if current_user == course.teacher %}
 <a class="btn btn-danger class-btn" href="{{ url_for('course.editcourse', id=course.id) }}">编辑课程</a>
 <a class="btn btn-danger class-btn" href="{{ url_for('course.removecourse', id=course.id) }}">删除课程</a>

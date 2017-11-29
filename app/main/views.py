@@ -4,7 +4,7 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
-    CommentForm
+    CommentForm, ProfessorForm
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, Course
 from ..decorators import admin_required, permission_required
@@ -42,7 +42,7 @@ def index():
     return render_template('main/index.html', form=form, posts=posts,
                            show_followed=show_followed, pagination=pagination)
 
-@main.route('/user/<username>')
+@main.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
@@ -54,8 +54,15 @@ def user(username):
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     courses = pagination.items
+    applyform = ProfessorForm()
+    if applyform.validate_on_submit():
+        current_user.teacher_date = datetime.datetime.now()
+        current_user.apply_message = applyform.apply_message.data
+        db.session.add(current_user)
+        flash('申请成功！管理员13122358292将会和您联系。')
+        return redirect(url_for('.user', username=current_user.username))
     return render_template('main/user.html', user=user, courses=courses,
-                           pagination=pagination)
+                           pagination=pagination, applyform=applyform)
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -99,17 +106,6 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('main/edit_profile.html', form=form, user=user)
-
-@main.route('/apply_for_professor', methods=['GET', 'POST'])
-@login_required
-def apply_for_professor():
-    try:
-        current_user.teacher_date=datetime.datetime.now()
-        db.session.add(current_user)
-        flash('申请成功！管理员13122358292将会和您联系。')
-        return jsonify({'Message': 'OK'})
-    except:
-        return jsonify({'Message': '我觉得不行'})
 
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):

@@ -30,10 +30,10 @@
                         考研 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('course.index') }}">成电</a></li>
-                        <li><a href="{{ url_for('main.emptypage') }}">复旦</a></li>
-                        <li><a href="{{ url_for('main.emptypage') }}">东南</a></li>
-                        <li><a href="{{ url_for('main.emptypage') }}">杭电</a></li>
+                        <li><a href="{{ url_for('course.college', collegename='chengdian') }}">成电</a></li>
+                        <li><a href="{{ url_for('course.college', collegename='fudan') }}">复旦</a></li>
+                        <li><a href="{{ url_for('course.college', collegename='dongnan') }}">东南</a></li>
+                        <li><a href="{{ url_for('course.college', collegename='zhongkeyuan') }}">中科院</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -64,10 +64,16 @@
                 {% if current_user.can(Permission.ADD_CLASS) %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        课程 <b class="caret"></b>
+                        管理 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('course.addcourse') }}">添加课程</a></li>
+                        {% if current_user.can(Permission.ADD_SUBJECT) %}
+                            <li><a href="{{ url_for('course.addsubject') }}">添加专业</a></li>
+                        {% endif %}
+                        {% if current_user.can(Permission.MANAGE_TEACHER) %}
+                        <li><a href="{{ url_for('course.professor_manager') }}">批准老师</a></li>
+                        {% endif %}
                     </ul>
                 </li>
                 {% endif %}

@@ -31,3 +31,5 @@ def send_sms(phone_numbers, code, sign_name=u'用芯学', template_code='SMS_992
     return smsResponse
 
 # send_sms('13122358292', '123456')
+if __name__ == '__main__':
+    send_sms('13122358292', '123456')

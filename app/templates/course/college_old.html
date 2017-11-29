@@ -1,34 +1,32 @@
 {% extends "base.html" %}
-{% import "main/_macros.html" as macros %}
 
 {% block title %}用芯学 - 考研{% endblock %}
 
 {% block page_content %}
 <div class="col-md-9">
-{% for subject in subjects %}
+{% for teacher in teachers %}
     <article class="article">
         <!--老师的信息-->
         <h3>
-{#        <a href="{{ url_for('main.user', username=teacher.username) }}">#}
-{#            {{ subject.subjectname }}</a>#}
-        {{ subject.subjectname }}
+        <a href="{{ url_for('main.user', username=teacher.username) }}">
+            <img id="teacher-img" class="img-rounded" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
+            {{ teacher.name }}</a>
         </h3>
-        {% if current_user.is_administrator() %}
-        <div class="post-footer">
-        <a href="{{ url_for('.editsubject', id=subject.id) }}">
-            <span class="label label-danger">编辑 [Admin]</span>
-        </a>
-        <a href="{{ url_for('.removesubject', id=subject.id) }}">
-            <span class="label label-primary">删除</span>
-        </a>
-        </div>
-        {% endif %}
-        <div>{{ subject.about_subject | safe }}</div>
-
-
+        <!--老师的一些标签-->
+{#        <span class="label label-default" id="teacher-tag">#}
+{#            <span class="glyphicon glyphicon-leaf"></span> test#}
+{#        </span>#}
+{#        <span class="label label-default" id="teacher-tag">#}
+{#            <span class="glyphicon glyphicon-leaf"></span> test#}
+{#        </span>#}
+{#        <span class="label label-default" id="teacher-tag">#}
+{#            <span class="glyphicon glyphicon-leaf"></span> test#}
+{#        </span>#}
+        <!--老师的介绍-->
+        <p>{{ teacher.about_me }}</p>
         <!--下面是课程-->
         <div class="row">
-            {% for course in subject.course %}
+            {% for course in teacher.teachercourse %}
             <div class="teacher-course col-md-3">
                 <div class="pic">
                     <a href="{{ url_for('course.classes', id=course.id) }}">
@@ -47,11 +45,6 @@
         </div>
     </article>
 {% endfor %}
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.index') }}
-</div>
-{% endif %}
 </div>
 <div class="col-md-3">
 
