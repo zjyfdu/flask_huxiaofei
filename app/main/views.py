@@ -47,7 +47,7 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
     if user.role.name == 'Teacher':
-        query = user.teachercourse
+        query = user.teachercourses
     else:
         query = user.studentscourses
     pagination = query.order_by(Course.timestamp.desc()).paginate(

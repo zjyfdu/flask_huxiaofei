@@ -30,29 +30,31 @@
 </div>
 
 <div class="col-md-9" style="padding-left: 0px;">
-<div>
-    <ul class="nav nav-tabs">
-        {% if course in current_user.studentscourses %}
-        <li class="active"><a href="javascript:void(0)">课程资料</a></li>
-        <li><a href="javascript:void(0)">课程介绍</a></li>
-        {% else %}
-        <li class="active"><a href="javascript:void(0)">课程介绍</a></li>
-        {% endif %}
-        <li><a href="javascript:void(0)">我要提问</a></li>
-    </ul>
-    <div class="notice-content">
-        {% if course in current_user.studentscourses %}
-        <div class="module">
-            {{ course.introduction2|safe }}
-        </div>
-        {% endif %}
-        <div class="module">
-            {{ course.introduction|safe }}
-        </div>
-        <div class="module">
-            <h1>TODO</h1>
-        </div>
+<ul id="myTab" class="nav nav-tabs">
+    {% if course in current_user.studentscourses %}
+	<li class="active"><a href="#intro2" data-toggle="tab">课程资料</a></li>
+	<li><a href="#intro" data-toggle="tab">课程介绍</a></li>
+    {% else %}
+    <li class="active"><a href="#intro" data-toggle="tab">课程介绍</a></li>
+    {% endif %}
+	<li><a href="#question" data-toggle="tab">我要提问</a></li>
+</ul>
+<div id="myTabContent" class="tab-content">
+    {% if course in current_user.studentscourses %}
+	<div class="tab-pane fade in active" id="intro2">
+		{{ course.introduction2|safe }}
     </div>
+	<div class="tab-pane fade" id="intro">
+		{{ course.introduction|safe }}
+	</div>
+    {% else %}
+	<div class="tab-pane fade active" id="intro">
+		{{ course.introduction|safe }}
+	</div>
+    {% endif %}
+	<div class="tab-pane fade" id="question">
+		<h1>TODO</h1>
+	</div>
 </div>
 </div>
 
@@ -60,20 +62,22 @@
 {% if course not in current_user.studentscourses %}
 <a class="btn btn-primary class-btn" href="{{ url_for('course.joinincourse', id=course.id) }}">加入学习</a>
 {% endif %}
-{% if current_user == course.teacher or current_user.is_administrator() %}
+{% if current_user in course.teachers or current_user.is_administrator() %}
 <a class="btn btn-danger class-btn" href="{{ url_for('course.editcourse', id=course.id) }}">编辑课程</a>
 <a class="btn btn-danger class-btn" href="{{ url_for('course.removecourse', id=course.id) }}">删除课程</a>
 {% endif %}
 <div class="teacher">
+    <h4>老师</h4><hr>
+    {% for teacher in course.teachers %}
     <div>
-        <h4>老师</h4><hr>
         <h4>
-        <a href="{{ url_for('main.user', username=course.teacher.username) }}">
-            <img id="teacher-img" class="img-rounded" src="{% if course.teacher.avatar_url %}{{ course.teacher.avatar_url }}{% else %}{{ course.teacher.gravatar() }}{% endif %}">
-            {{ course.teacher.name }}</a>
+        <a href="{{ url_for('main.user', username=teacher.username) }}">
+            <img id="teacher-img" class="img-rounded" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
+            {{ teacher.name }}</a>
         </h4>
-        <p>{{ course.teacher.about_me }}</p>
+        <p>{{ teacher.about_me }}</p>
     </div>
+    {% endfor %}
 </div>
 </div>
 <!-- Go to www.addthis.com/dashboard to customize your tools -->

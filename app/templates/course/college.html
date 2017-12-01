@@ -1,35 +1,38 @@
 {% extends "base.html" %}
-{% import "main/_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}用芯学 - 考研{% endblock %}
 
+{% block head %}
+{{ super() }}
+<script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
 {% block page_content %}
-<div class="col-md-9">
-{% for subject in subjects %}
-    <article class="article">
-        <!--老师的信息-->
-        <h3>
-{#        <a href="{{ url_for('main.user', username=teacher.username) }}">#}
-{#            {{ subject.subjectname }}</a>#}
-        {{ subject.subjectname }}
-        </h3>
-        {% if current_user.is_administrator() %}
-        <div class="post-footer">
-        <a href="{{ url_for('.editsubject', id=subject.id) }}">
-            <span class="label label-danger">编辑 [Admin]</span>
-        </a>
-        <a href="{{ url_for('.removesubject', id=subject.id) }}">
-            <span class="label label-primary">删除</span>
-        </a>
-        </div>
-        {% endif %}
-        <div id="wrap{{ subject.id }}" class="wrap">{{ subject.about_subject | safe }}</div>
-        <div id="read-more{{ subject.id }}" class="read-more"></div>
+<div class="jumbotron school" style="padding: 0px; background-image: url({{ school.img_url }}); min-height: 160px">
+</div>
 
+<div>
 
-        <!--下面是课程-->
+<ul id="myTab" class="nav nav-tabs">
+	<li class="active"><a href="#subject" data-toggle="tab">考试大纲</a></li>
+	<li><a href="#download" data-toggle="tab">课程资料</a></li>
+	<li><a href="#courses" data-toggle="tab">加入学习</a></li>
+    {% if current_user.is_administrator() %}
+	<li><a href="#edit-admin" data-toggle="tab">编辑</a></li>
+    {% endif %}
+</ul>
+<div id="myTabContent" class="tab-content">
+	<div class="tab-pane fade in active" id="subject">
+        {{ school.introduction | safe}}
+	</div>
+	<div class="tab-pane fade" id="download">
+		{{ school.introduction2 | safe}}
+	</div>
+	<div class="tab-pane fade" id="courses">
         <div class="row">
-            {% for course in subject.course %}
+            <br>
+            {% for course in school.courses %}
             <div class="teacher-course col-md-3">
                 <div class="pic">
                     <a href="{{ url_for('course.classes', id=course.id) }}">
@@ -46,58 +49,33 @@
             </div>
             {% endfor %}
         </div>
-    </article>
-{% endfor %}
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.index') }}
+    <div class="courses">
+        {% for course in school.courses %}
+            <div class="user-course">
+                <div class="user-course-pic">
+                <a href="{{ url_for('course.classes', id=course.id) }}">
+                    <img id="course-img" src="{% if course.img_url %}{{ course.img_url }}{% else %}{{ url_for('static', filename='img/coursedefault.png') }}{% endif %}" alt="" width="100%" height="100%">
+                </a>
+                </div>
+                <div class="user-course-content">
+                    <h4><a href="{{ url_for('course.classes', id=course.id) }}">{{ course.title }}</a></h4>
+                    <p>{{ course.abstract }}</p>
+                    <div class="user-course-footer">
+                        <span class="label label-primary">￥{{ course.price }}</span>
+                        <span class="label label-primary"><span class="glyphicon glyphicon-user "></span>  {{ course.students.count() }}</span>
+                        <a href="{{ url_for('course.classes', id=course.id) }}"><span class="label label-danger">查看详情</span></a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+	</div>
+    {% if current_user.is_administrator() %}
+	<div class="tab-pane fade" id="edit-admin">
+        {{ wtf.quick_form(form, enctype="multipart/form-data")}}
+    </div>
+    {% endif %}
 </div>
-{% endif %}
-</div>
-<div class="col-md-3">
-
-    <article class="article">
-        <h5><span class="glyphicon glyphicon-leaf" aria-hidden="true"></span>写点提示啊什么的</h5>
-
-        <ul>
-            <li class="presentation"><a href="#" ><p>这里写点啥<span class="badge text-right" style="float:right">10</span></p></a></li>
-        </ul>
-    </article>
-
-</div>
-
-<style>
-.wrap{position: relative;overflow: hidden;}
-.read-more a{padding-right: 22px;background: url() no-repeat 100% 50%;font-weight: bold;text-decoration: none;}
-.read-more a:hover{color: #000;}
-</style>
-<script type="text/javascript">
-{% for subject in subjects %}
-$(function(){
- var slideHeight = 300; // px
- var defHeight = $('#wrap{{ subject.id }}').height();
- if(defHeight >= slideHeight){
-  $('#wrap{{ subject.id }}').css('height' , slideHeight + 'px');
-  $('#read-more{{ subject.id }}').append('<a href="#">查看更多</a>');
-  $('#read-more{{ subject.id }} a').click(function(){
-   var curHeight = $('#wrap{{ subject.id }}').height();
-   if(curHeight == slideHeight){
-    $('#wrap{{ subject.id }}').animate({
-     height: defHeight
-    }, "normal");
-    $('#read-more{{ subject.id }} a').html('隐藏');
-   }else{
-    $('#wrap{{ subject.id }}').animate({
-     height: slideHeight
-    }, "normal");
-    $('#read-more{{ subject.id }} a').html('查看更多');
-   }
-   return false;
-  });
- }
-});
-{% endfor %}
-</script>
 
 
 {% endblock %}

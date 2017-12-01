@@ -14,7 +14,6 @@ class Permission:
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
     ADD_CLASS = 0x10
-    ADD_SUBJECT = 0x20
     MANAGE_TEACHER = 0x40
     ADMINISTER = 0x80
 
@@ -64,6 +63,10 @@ registrations = db.Table('registrations',
                          db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
                          db.Column('course_id', db.Integer, db.ForeignKey('courses.id'))
                          )
+registrationst = db.Table('registrationst',
+                         db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+                         db.Column('course_id', db.Integer, db.ForeignKey('courses.id'))
+                         )
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -100,8 +103,10 @@ class User(UserMixin, db.Model):
                                       secondary=registrations,
                                       backref=db.backref('students', lazy='dynamic'),
                                       lazy='dynamic')
-    teachercourse = db.relationship('Course', backref='teacher', lazy='dynamic')
-    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'))
+    teachercourses = db.relationship('Course',
+                                      secondary=registrationst,
+                                      backref=db.backref('teachers', lazy='dynamic'),
+                                      lazy='dynamic')
 
     @staticmethod
     def fuck_me():
@@ -344,13 +349,12 @@ class Course(db.Model):
     introduction2 = db.Column(db.Text) #付款之后能看到的界面
     price = db.Column(db.Integer)
     mode = db.Column(db.String(32))
-    img_url = db.Column(db.String(128))
+    img_url = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'))
+    school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
 
     def __repr__(self):
-        return '<User %r>' % self.title
+        return '<Course %r>' % self.title
 
     @staticmethod
     def generate_fake(count=100):
@@ -397,23 +401,15 @@ class CourseReply(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     coursecomment_id = db.Column(db.Integer, db.ForeignKey('coursecomment.id'))
 
-class Subject(db.Model):
-    __tablename__ = 'subject'
-    id = db.Column(db.Integer, primary_key=True)
-    subjectname = db.Column(db.String(32), unique=True)
-    about_subject = db.Column(db.Text)
-    school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
-    teacher = db.relationship('User', backref='subject', lazy='dynamic')
-    course = db.relationship('Course', backref='subject', lazy='dynamic')
-
-    def __repr__(self):
-        return '<Subject %r>' % self.subjectname
-
 class School(db.Model):
     __tablename__ = 'school'
     id = db.Column(db.Integer, primary_key=True)
     collegename = db.Column(db.String(32))
-    subjects = db.relationship('Subject', backref='school', lazy='dynamic')
+    officialname = db.Column
+    courses = db.relationship('Course', backref='school', lazy='dynamic')
+    introduction = db.Column(db.Text)
+    introduction2 = db.Column(db.Text)
+    img_url = db.Column(db.String(256))
 
     def __repr__(self):
         return '<School %r>' % self.collegename

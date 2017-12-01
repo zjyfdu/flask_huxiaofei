@@ -8,7 +8,8 @@ from ..models import User
 class CourseForm(FlaskForm):
     title = StringField('课程名', validators=[DataRequired('内容不能为空')])
     price = IntegerField('价格', validators=[DataRequired("请填个自然数")])
-    mode = StringField('上课方式', validators=[DataRequired("内容不能为空")])
+    school = SelectField("选择学校", choices=[('chengdian', '成电'), ('fudan', '复旦'), ('dongnan', '东南'), ('zhongkeyuan', '中科院')])
+    mode = SelectField("上课方式", choices=[('视频', '视频'), ('直播', '直播'), ('面对面', '面对面')])
     abstract = StringField('课程简介', validators=[DataRequired('内容不能为空')])
     introduction = TextAreaField("课程的详细介绍", validators=[DataRequired("内容不能为空")])
     introduction2 = TextAreaField("加入课程之后展示", validators=[DataRequired("内容不能为空")])
@@ -21,21 +22,12 @@ class CourseForm(FlaskForm):
         elif field.data>20000:
             raise ValidationError(u'这么凶')
 
+class CourseFormAdmin(CourseForm):
+    teachers = StringField('老师用户名，用空格隔开')
+    submit = SubmitField('提交')
 
-class SubjectForm(FlaskForm):
-    title = StringField('专业课', validators=[DataRequired('内容不为空')])
-    school = SelectField("选择学校", choices=[('chengdian', '成电'), ('fudan', '复旦'), ('dongnan', '东南'), ('zhongkeyuan', '中科院')])
-    about_subject = TextAreaField('专业的详细点的介绍', validators=[DataRequired('内容不为空')])
-    submit = SubmitField("提交")
-
-class ApproveForm(FlaskForm):
-    username = StringField('用户名', validators=[DataRequired('内容不为空')])
-    school = SelectField("选择学校", choices=[('chengdian', '成电'), ('fudan', '复旦'), ('dongnan', '东南'), ('zhongkeyuan', '中科院')])
-    subject = StringField('专业课', validators=[DataRequired('内容不为空')])
-    submit = SubmitField("提交")
-
-    # def validate_subject(self, field):
-    #     if field.data<0:
-    #         raise ValidationError(u'不要赔钱啊')
-    #     elif field.data>20000:
-    #         raise ValidationError(u'这么凶')
+class SchoolFormAdmin(FlaskForm):
+    introduction = TextAreaField("考试大纲", validators=[DataRequired('你家的考试大纲是空的？！')])
+    introduction2 = TextAreaField("课程资料", validators=[DataRequired('你一定有资料的')])
+    image = FileField('可以上传个背景图啊')
+    submit = SubmitField('提交')

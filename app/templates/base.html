@@ -8,7 +8,7 @@
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 
-<script type="text/javascript" src="{{ url_for('static', filename='myjs.js') }}"></script>
+{#<script type="text/javascript" src="{{ url_for('static', filename='myjs.js') }}"></script>#}
 {% endblock %}
 
 {% block navbar %}
@@ -68,9 +68,6 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('course.addcourse') }}">添加课程</a></li>
-                        {% if current_user.can(Permission.ADD_SUBJECT) %}
-                            <li><a href="{{ url_for('course.addsubject') }}">添加专业</a></li>
-                        {% endif %}
                         {% if current_user.can(Permission.MANAGE_TEACHER) %}
                         <li><a href="{{ url_for('course.professor_manager') }}">批准老师</a></li>
                         {% endif %}
