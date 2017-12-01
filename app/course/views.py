@@ -12,7 +12,7 @@ from werkzeug import secure_filename
 
 @course.route('/')
 def index():
-    return redirect(url_for('course.college', collegename='chengdian'))
+    return redirect(url_for('course.college', collegename='fudan'))
 
 @course.route('/college/<string:collegename>', methods=['GET', 'POST'])
 def college(collegename):
@@ -23,9 +23,11 @@ def college(collegename):
         school.introduction2=form.introduction2.data
         file = request.files[form.image.name]
         if file:
+            if school.img_url:
+                os.remove(os.path.join(current_app.static_folder, 'schoolbanner', os.path.split(school.img_url)[-1]))
             size = (1140, 160)
             im = Image.open(file)
-            im.thumbnail(size)
+            im = im.resize(size)
             from ..main.views import gen_rnd_filename
             fname, fext = os.path.splitext(file.filename)
             rnd_name = '%s%s' % (gen_rnd_filename(), fext)
@@ -72,7 +74,7 @@ def addcourse():
         if file:
             size = (240, 140)
             im = Image.open(file)
-            im.thumbnail(size)
+            im = im.resize(size)
             from ..main.views import gen_rnd_filename
             fname, fext = os.path.splitext(file.filename)
             rnd_name = '%s%s' % (gen_rnd_filename(), fext)
@@ -117,10 +119,12 @@ def editcourse(id):
                 os.remove(os.path.join(current_app.static_folder, 'courseimg', os.path.split(course.img_url)[-1]))
             size = (240, 140)
             im = Image.open(file)
-            im.thumbnail(size)
-            filename = secure_filename(file.filename)
-            im.save(os.path.join(current_app.static_folder, 'courseimg', filename))
-            course.img_url = url_for('static', filename='%s/%s' % ('courseimg', filename))
+            im = im.resize(size)
+            from ..main.views import gen_rnd_filename
+            fname, fext = os.path.splitext(file.filename)
+            rnd_name = '%s%s' % (gen_rnd_filename(), fext)
+            im.save(os.path.join(current_app.static_folder, 'courseimg', rnd_name))
+            course.img_url = url_for('static', filename='%s/%s' % ('courseimg', rnd_name))
         if current_user.can(Permission.ADMINISTER):
             for teacher in course.teachers:
                 course.teachers.remove(teacher)
