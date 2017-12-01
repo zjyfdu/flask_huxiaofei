@@ -18,8 +18,6 @@ def index():
 def college(collegename):
     school = School.query.filter_by(collegename=collegename).first_or_404()
     form = SchoolFormAdmin()
-    form.introduction.data = school.introduction
-    form.introduction2.data = school.introduction2
     if current_user.is_administrator() and form.validate_on_submit():
         school.introduction=form.introduction.data
         school.introduction2=form.introduction2.data
@@ -28,15 +26,19 @@ def college(collegename):
             size = (1140, 160)
             im = Image.open(file)
             im.thumbnail(size)
-            filename = secure_filename(file.filename)
-            im.save(os.path.join(current_app.static_folder, 'schoolbanner', filename))
-            school.img_url = url_for('static', filename='%s/%s' % ('schoolbanner', filename))
+            from ..main.views import gen_rnd_filename
+            fname, fext = os.path.splitext(file.filename)
+            rnd_name = '%s%s' % (gen_rnd_filename(), fext)
+            im.save(os.path.join(current_app.static_folder, 'schoolbanner', rnd_name))
+            school.img_url = url_for('static', filename='%s/%s' % ('schoolbanner', rnd_name))
         db.session.add(school)
         try:
             db.session.commit()
         except:
             db.session.rollback()
         return redirect(url_for('course.college', collegename=collegename))
+    form.introduction.data = school.introduction
+    form.introduction2.data = school.introduction2
     return render_template('course/college.html', school=school, form=form)
 
 @course.route('/class/<int:id>', methods=['GET', 'POST'])
@@ -71,9 +73,11 @@ def addcourse():
             size = (240, 140)
             im = Image.open(file)
             im.thumbnail(size)
-            filename = secure_filename(file.filename)
-            im.save(os.path.join(current_app.static_folder, 'courseimg', filename))
-            course.img_url = url_for('static', filename='%s/%s' % ('courseimg', filename))
+            from ..main.views import gen_rnd_filename
+            fname, fext = os.path.splitext(file.filename)
+            rnd_name = '%s%s' % (gen_rnd_filename(), fext)
+            im.save(os.path.join(current_app.static_folder, 'courseimg', rnd_name))
+            course.img_url = url_for('static', filename='%s/%s' % ('courseimg', rnd_name))
         db.session.add(course)
         try:
             db.session.commit()

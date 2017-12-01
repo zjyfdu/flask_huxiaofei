@@ -279,9 +279,7 @@ def ckupload():
         fileobj = request.files['upload']
         fname, fext = os.path.splitext(fileobj.filename)
         rnd_name = '%s%s' % (gen_rnd_filename(), fext)
-
         filepath = os.path.join(current_app.static_folder, 'upload', rnd_name)
-
         dirname = os.path.dirname(filepath)
         if not os.path.exists(dirname):
             try:
