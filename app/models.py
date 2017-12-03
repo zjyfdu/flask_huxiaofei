@@ -99,6 +99,7 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    coursecomments = db.relationship('CourseComment', backref='user', lazy='dynamic')
     studentscourses = db.relationship('Course',
                                       secondary=registrations,
                                       backref=db.backref('students', lazy='dynamic'),
@@ -352,6 +353,8 @@ class Course(db.Model):
     img_url = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
+    coursecomments = db.relationship('CourseComment', backref='course', lazy='dynamic')
+
 
     def __repr__(self):
         return '<Course %r>' % self.title
@@ -393,18 +396,34 @@ class CourseComment(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('coursecomment.id'))
+    parent = db.relationship('CourseComment', remote_side=[id], backref=db.backref('children'))
+    childrencount = db.Column(db.Integer, default=0)
 
-class CourseReply(db.Model):
-    __tablename__ = 'coursereply'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    coursecomment_id = db.Column(db.Integer, db.ForeignKey('coursecomment.id'))
+    @staticmethod
+    def on_changed_parent_id(target, value, oldvalue, initiator):
+        current = CourseComment.query.filter_by(id=value).first()
+        while current:
+            current.childrencount += 1
+            db.session.add(current)
+            db.session.commit()
+            print current.childrencount
+            current = current.parent
+
+db.event.listen(CourseComment.parent_id, 'set', CourseComment.on_changed_parent_id)
+
+# class CourseReply(db.Model):
+#     __tablename__ = 'coursereply'
+#     id = db.Column(db.Integer, primary_key=True)
+#     body = db.Column(db.Text)
+#     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+#     # coursecomment_id = db.Column(db.Integer, db.ForeignKey('coursecomment.id'))
 
 class School(db.Model):
     __tablename__ = 'school'
     id = db.Column(db.Integer, primary_key=True)
     collegename = db.Column(db.String(32))
+    actualname = db.Column(db.String(32))
     officialname = db.Column
     courses = db.relationship('Course', backref='school', lazy='dynamic')
     introduction = db.Column(db.Text)

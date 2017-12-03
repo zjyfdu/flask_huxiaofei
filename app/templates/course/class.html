@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import "course/_coursecomment.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Flasky - Confirm your account{% endblock %}
 
@@ -33,10 +35,8 @@
 <ul id="myTab" class="nav nav-tabs">
     {% if course in current_user.studentscourses %}
 	<li class="active"><a href="#intro2" data-toggle="tab">课程资料</a></li>
-	<li><a href="#intro" data-toggle="tab">课程介绍</a></li>
-    {% else %}
-    <li class="active"><a href="#intro" data-toggle="tab">课程介绍</a></li>
     {% endif %}
+    <li {% if course not in current_user.studentscourses %}class="active"{% endif %}><a href="#intro" data-toggle="tab">课程介绍</a></li>
 	<li><a href="#question" data-toggle="tab">我要提问</a></li>
 </ul>
 <div id="myTabContent" class="tab-content">
@@ -44,16 +44,29 @@
 	<div class="tab-pane fade in active" id="intro2">
 		{{ course.introduction2|safe }}
     </div>
-	<div class="tab-pane fade" id="intro">
-		{{ course.introduction|safe }}
-	</div>
-    {% else %}
-	<div class="tab-pane fade active" id="intro">
-		{{ course.introduction|safe }}
-	</div>
     {% endif %}
-	<div class="tab-pane fade" id="question">
-		<h1>TODO</h1>
+	<div class="tab-pane fade in {% if course not in current_user.studentscourses %}active{% endif %}" id="intro">
+		{{ course.introduction|safe }}
+	</div>
+	<div class="tab-pane fade in" id="question">
+        {{ macros.comment_macro(coursecomments, form, moment) }}
+        <form method="post" class="form" role="form">
+            {{ form.csrf_token }}
+            <div class="form-group" style="display: none">
+                <label class="control-label" for="{{ form.parent_id.name }}">{{ form.parent_id.label }}</label>
+                {{ form.parent_id(class="form-control",id="parent_id",value=0) }}
+            </div>
+            <div class="form-group {% if form.body.errors %} has-error{% endif %}">
+                <label class="control-label" for="{{ form.body.name }}">{{ form.body.label }}</label>
+                {{ form.body(class="form-control",placeholder="说点什么吧") }}
+                {%- if form.body.errors %}
+                  {%- for error in form.body.errors %}
+                    <p class="help-block">{{error}}</p>
+                  {%- endfor %}
+                {% endif %}
+            </div>
+            <input class="btn btn-default" id="submit" name="submit" type="submit" value="提交">
+        </form>
 	</div>
 </div>
 </div>
@@ -70,7 +83,7 @@
     <h4>老师</h4><hr>
     {% for teacher in course.teachers %}
     <div>
-        <h4>
+        <h4 class="col-md-offset-2">
         <a href="{{ url_for('main.user', username=teacher.username) }}">
             <img id="teacher-img" class="img-rounded" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
             {{ teacher.name }}</a>
@@ -82,4 +95,19 @@
 </div>
 <!-- Go to www.addthis.com/dashboard to customize your tools -->
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-575e4828bfd1c105"></script>
+<script>
+
+$(document).ready(function() {
+    if(location.hash) {
+        $('a[href=' + location.hash + ']').tab('show');
+    }
+    $(document.body).on("click", "a[data-toggle]", function(event) {
+        location.hash = this.getAttribute("href");
+    });
+});
+$(window).on('popstate', function() {
+    var anchor = location.hash || $("a[data-toggle=tab]").first().attr("href");
+    $('a[href=' + anchor + ']').tab('show');
+});
+</script>
 {% endblock %}

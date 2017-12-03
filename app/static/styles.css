@@ -47,18 +47,22 @@ ul.comments {
     margin: 16px 0px 0px 0px;
 }
 ul.comments li.comment {
-    margin-left: 32px;
-    padding: 8px;
-    border-bottom: 1px solid #e0e0e0;
-}
-ul.comments li.comment:nth-child(1) {
+    /*margin-left: 32px;*/
+    /*padding: 8px;*/
     border-top: 1px solid #e0e0e0;
 }
+/*ul.comments li.comment:nth-child(1) {*/
+    /*border-top: 1px solid #e0e0e0;*/
+/*}*/
 ul.comments li.comment:hover {
     background-color: #f0f0f0;
 }
 div.comment-date {
     float: right;
+}
+div.comment-icon {
+    float: right;
+    color: grey;
 }
 div.comment-author {
     font-weight: bold;
@@ -68,7 +72,7 @@ div.comment-thumbnail {
 }
 div.comment-content {
     margin-left: 48px;
-    min-height: 48px;
+    min-height: 62px;
 }
 div.comment-form {
     margin: 16px 0px 16px 32px;
@@ -185,14 +189,10 @@ div.btn {
     margin-bottom: 20px;
 }
 
-div.navbar a {
-    font-size: 120%;
-    font-weight: bold;
-}
-
-div.navbar {
-	background-color: #F5F5F5;
-}
+/*div.navbar a {*/
+    /*font-size: larger;*/
+    /*font-weight: bold;*/
+/*}*/
 
 div.user-course {
     padding: 8px;

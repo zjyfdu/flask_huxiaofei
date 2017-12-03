@@ -2,13 +2,12 @@
 from flask import render_template, redirect, request, url_for, flash, current_app, abort, jsonify
 from . import course
 from .. import db
-from ..models import User, Course, Role, Permission, School
-from .forms import CourseForm, CourseFormAdmin, SchoolFormAdmin
+from ..models import User, Course, Role, Permission, School, CourseComment
+from .forms import CourseForm, CourseFormAdmin, SchoolFormAdmin, CourseCommentForm
 from PIL import Image
 from flask_login import current_user, login_required
 from datetime import datetime
 import os
-from werkzeug import secure_filename
 
 @course.route('/')
 def index():
@@ -24,7 +23,10 @@ def college(collegename):
         file = request.files[form.image.name]
         if file:
             if school.img_url:
-                os.remove(os.path.join(current_app.static_folder, 'schoolbanner', os.path.split(school.img_url)[-1]))
+                try:
+                    os.remove(os.path.join(current_app.static_folder, 'schoolbanner', os.path.split(school.img_url)[-1]))
+                except:
+                    pass
             size = (1140, 160)
             im = Image.open(file)
             im = im.resize(size)
@@ -46,7 +48,22 @@ def college(collegename):
 @course.route('/class/<int:id>', methods=['GET', 'POST'])
 def classes(id):
     course = Course.query.get_or_404(id)
-    return render_template('course/class.html', course=course)
+    form = CourseCommentForm()
+    if form.validate_on_submit():
+        coursecomment = CourseComment(user=current_user,
+                                      course=course,
+                                      body=form.body.data,
+                                      timestamp=datetime.now(),
+                                      parent_id=form.parent_id.data)
+        db.session.add(coursecomment)
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        return redirect(url_for('course.classes', id=id))
+    coursecomments = [comment for comment in course.coursecomments if not comment.parent]
+    return render_template('course/class.html', course=course, form=form,
+                           coursecomments=coursecomments)
 
 @course.route('/addcourse', methods=['GET', 'POST'])
 def addcourse():

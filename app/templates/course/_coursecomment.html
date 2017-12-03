@@ -1,0 +1,67 @@
+{% macro comment_macro(coursecomments, form, moment, layer=0) %}
+<ul class="comments" {% if layer==1 %}style="margin-left: 36px"{% endif %}>
+    {% for comment in coursecomments %}
+    <li class="comment">
+        <div class="comment-thumbnail">
+            <a href="{{ url_for('main.user', username=comment.user.username) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ comment.user.gravatar(size=40) }}">
+            </a>
+        </div>
+        <div class="comment-content" style="overflow:hidden">
+            <div class="comment-date">{{ moment(comment.timestamp).fromNow() }}</div>
+            <div class="comment-author"><a href="{{ url_for('main.user', username=comment.user.username) }}">{{ comment.user.username }}</a></div>
+            <div class="comment-body">
+                {% if layer>1 %}<a href="{{ url_for('main.user', username=comment.parent.user.username) }}">@{{ comment.parent.user.username }}</a>  {% endif %}{{ comment.body }}
+            </div>
+            <div class="comment-icon">
+                <span id="reply{{ comment.id }}"><span class="glyphicon glyphicon-comment "></span> {{ comment.childrencount }}   </span>
+
+                {% if layer==0 and comment.children%}
+                <span id="show{{ comment.id }}">收起</span>
+                {% endif %}
+            </div>
+        </div>
+        <div id="replyform{{ comment.id }}" style="display: none">
+            <form method="post" class="form" role="form">
+                {{ form.csrf_token }}
+                <div class="form-group" style="display: none">
+                    <label class="control-label" for="{{ form.parent_id.name }}">{{ form.parent_id.label }}</label>
+                    {{ form.parent_id(class="form-control",id="parent_id",value=comment.id) }}
+                </div>
+                <div class="form-group {% if form.body.errors %} has-error{% endif %}">
+                    <label class="control-label" for="{{ form.body.name }}">{{ form.body.label }}</label>
+                    {{ form.body(class="form-control",placeholder="我要说点啥") }}
+                    {%- if form.body.errors %}
+                      {%- for error in form.body.errors %}
+                        <p class="help-block">{{error}}</p>
+                      {%- endfor %}
+                    {% endif %}
+                </div>
+                <input class="btn btn-default" id="submit" name="submit" type="submit" value="提交">
+            </form>
+        </div>
+        {% if comment.children %}
+        <div id="showchildren{{ comment.id }}">
+            {{ comment_macro(comment.children, form, moment, layer=layer+1) }}
+        </div>
+        {% endif %}
+    </li>
+    <script>
+    $("#reply{{ comment.id }}").click(function(){
+      $("#replyform{{ comment.id }}").toggle(500);
+    });
+    {% if layer==0 and comment.children%}
+    $("#show{{ comment.id }}").click(function(){
+      $("#showchildren{{ comment.id }}").toggle(500, function () {
+          if($("#show{{ comment.id }}").text()=="收起"){
+              $("#show{{ comment.id }}").text("展开")
+          }else{
+              $("#show{{ comment.id }}").text("收起")
+          }
+      });
+    });
+    {% endif %}
+    </script>
+    {% endfor %}
+</ul>
+{% endmacro %}
