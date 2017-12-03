@@ -111,24 +111,26 @@
 
     {% block page_content %}{% endblock %}
 </div>
-{% block bigger_page_content %}{% endblock %}
+{% endblock %}
+
+{% block footer %}
 <div id="footer" >
     <div class="container">
-        <div class="row hidden-xs">
-            <dl class="col-sm-10 col-md-6">
+        <div class="row">
+            <dl class="col-sm-7 hidden-xs">
                 <dd><a href="/about">关于我们</a> | <a href="/contact">联系我们</a> | <a href="/hiring">加入我们</a> | <a href="/faq">帮助中心</a> | <a href="/website">网站相关</a> | <a href="{{ url_for('main.index') }}">意见反馈</a></dd>
-                <dd>
-            Copyright © 2011-2017 用芯学. 当前呈现版本 3.14<br><a href="http://www.miibeian.gov.cn/" rel="nofollow">浙ICP备 15005796号-2</a> &nbsp;
-            <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602002000" rel="nofollow">浙公网安备 33010602002000号</a><span class="ml5">杭州堆栈科技有限公司版权所有</span></dd>
+                <dd>Copyright © 2017 用芯学. 当前呈现版本 2.7</dd>
+                <dd>用芯学(上海)信息技术有限责任公司</dd>
+{#            Copyright © 2017 用芯学. 当前呈现版本 3.14<br><a href="http://www.miibeian.gov.cn/" rel="nofollow">浙ICP备 15005796号-2</a> &nbsp;#}
+{#            <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602002000" rel="nofollow">浙公网安备 33010602002000号</a><span class="ml5">杭州堆栈科技有限公司版权所有</span></dd>#}
 
             </dl>
-            <dl class="col-sm-2 col-md-6">
+            <dl class="col-sm-2 col-md-2">
                 <dd><img src="{{ url_for('static', filename='img/wechatQR.jpg') }}" class="app-qrcode"></dd>
             </dl>
 </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
