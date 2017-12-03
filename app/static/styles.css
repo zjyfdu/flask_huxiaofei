@@ -227,7 +227,6 @@ div.user-course-footer {
 }
 
 .jumbotron.course {
-    /*background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);*/
     background-image: url(http://ot0uaqt93.bkt.clouddn.com/17-11-29/6301939.jpg);
 }
 
@@ -241,7 +240,6 @@ div.user-course-footer {
 div.school-banner {
     border-radius: 6px; !important;
     border: 1px solid grey;
-    background-image: url(http://ot0uaqt93.bkt.clouddn.com/17-11-29/6301939.jpg);
     margin-bottom: 30px;
 }
 

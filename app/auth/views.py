@@ -9,20 +9,17 @@ from ..email import send_email
 from ..lib.send_sms import send_sms
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm, PhoneRegistrationForm
-from PIL import Image
-from werkzeug import secure_filename
 import os
 
-
-# @auth.before_app_request
-# def before_request():
-#     if current_user.is_authenticated:
-#         current_user.ping()
-#         if not current_user.confirmed \
-#                 and request.endpoint \
-#                 and request.endpoint[:5] != 'auth.' \
-#                 and request.endpoint != 'static':
-#             return redirect(url_for('auth.unconfirmed'))
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.ping()
+        if not current_user.confirmed \
+                and request.endpoint \
+                and request.endpoint[:5] != 'auth.' \
+                and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
@@ -171,24 +168,49 @@ def password_reset_request():
 #         flash('Invalid request.')
 #     return redirect(url_for('course.index'))
 
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+#
+# def allowed_file(filename):
+#     return '.' in filename and \
+#            filename.rsplit('.', 1)[1] in set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 @auth.route('/edit-avatar', methods=['GET', 'POST'])
 @login_required
 def change_avatar():
     if request.method == 'POST':
-        file = request.files['file']
-        size = (256, 256)
-        im = Image.open(file)
-        im.thumbnail(size)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            im.save(os.path.join(current_app.static_folder, 'avatar', filename))
-            current_user.avatar_url = url_for('static', filename='%s/%s' % ('avatar', filename))
+        imgdata = request.form.get('image').split(',', 1)[1]
+        from ..main.views import gen_rnd_filename
+        rnd_name = '%s%s' % (gen_rnd_filename(), '.png')
+        file_name = os.path.join(current_app.static_folder, 'avatar', rnd_name)
+        img_url = url_for('static', filename='%s/%s' % ('avatar', rnd_name))
+        try:
+            with open(file_name, 'wb') as f:
+                f.write(imgdata.decode('base64'))
+            if current_user.avatar_url:
+                try:
+                    os.remove(
+                        os.path.join(current_app.static_folder, 'avatar', os.path.split(current_user.avatar_url)[-1]))
+                except:
+                    pass
+            current_user.avatar_url = img_url
             db.session.add(current_user)
-            flash(u'头像修改成功')
-            return redirect(url_for('main.user', username=current_user.username))
-    return render_template('auth/change_avatar.html')
+            return jsonify({'result': 'ok',
+                            'file': img_url
+                            })
+        except:
+            return jsonify({'result': 'error'})
+
+    #     print
+    #     imgdata = base64.b64decode(request.form.get('image'))
+    #     print imgdata
+    #     file = request.files['file']
+    #     size = (256, 256)
+    #     im = Image.open(file)
+    #     im.thumbnail(size)
+    #     if file and allowed_file(file.filename):
+    #         filename = secure_filename(file.filename)
+    #         im.save(os.path.join(current_app.static_folder, 'avatar', filename))
+    #         current_user.avatar_url = url_for('static', filename='%s/%s' % ('avatar', filename))
+    #         db.session.add(current_user)
+    #         flash(u'头像修改成功')
+    #         return redirect(url_for('main.user', username=current_user.username))
+    # return render_template('auth/change_avatar.html')

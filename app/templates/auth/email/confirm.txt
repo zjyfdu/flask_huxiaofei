@@ -1,13 +1,8 @@
-Dear {{ user.username }},
-
-Welcome to Flasky!
-
-To confirm your account please click on the following link:
-
+嗨，{{ user.username }}，
+欢迎使用用芯学！
+我们是同志了！
+请粘贴下面url到浏览器地址栏中完成验证。
 {{ url_for('auth.confirm', token=token, _external=True) }}
-
-Sincerely,
-
-The Flasky Team
-
-Note: replies to this email address are not monitored.
+祝好！
+用芯学
+不要回复不要回复不要回复

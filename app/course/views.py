@@ -53,7 +53,6 @@ def classes(id):
         coursecomment = CourseComment(user=current_user,
                                       course=course,
                                       body=form.body.data,
-                                      timestamp=datetime.now(),
                                       parent_id=form.parent_id.data)
         db.session.add(coursecomment)
         try:
@@ -133,7 +132,10 @@ def editcourse(id):
         file = request.files[form.image.name]
         if file:
             if course.img_url:
-                os.remove(os.path.join(current_app.static_folder, 'courseimg', os.path.split(course.img_url)[-1]))
+                try:
+                    os.remove(os.path.join(current_app.static_folder, 'courseimg', os.path.split(course.img_url)[-1]))
+                except:
+                    pass
             size = (240, 140)
             im = Image.open(file)
             im = im.resize(size)
