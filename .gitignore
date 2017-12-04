@@ -47,3 +47,6 @@ upload
 courseimg
 avatar
 schoolbanner
+
+# search index
+whoosh_index

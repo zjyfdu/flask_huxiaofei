@@ -18,6 +18,11 @@ class Config:
     FLASKY_POSTS_PER_PAGE = 5
     FLASKY_FOLLOWERS_PER_PAGE = 50
     FLASKY_COMMENTS_PER_PAGE = 30
+    MSEARCH_INDEX_NAME = 'whoosh_index'
+    # simple,whoosh
+    MSEARCH_BACKEND = 'whoosh'
+    # auto create or update index
+    MSEARCH_ENABLE = True
 
     @staticmethod
     def init_app(app):

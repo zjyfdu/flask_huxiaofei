@@ -70,6 +70,7 @@ registrationst = db.Table('registrationst',
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
+    __searchable__ = ['username', 'name', 'about_me']
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
     cellphone = db.Column(db.Integer, unique=True, index=True)
@@ -227,9 +228,9 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-    def generate_reset_token(self, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'reset': self.id})
+    # def generate_reset_token(self, expiration=3600):
+    #     s = Serializer(current_app.config['SECRET_KEY'], expiration)
+    #     return s.dumps({'reset': self.id})
 
     # def reset_password(self, token, new_password):
     #     s = Serializer(current_app.config['SECRET_KEY'])
@@ -349,6 +350,7 @@ class Post(db.Model):
 
 class Course(db.Model):
     __tablename__ = 'courses'
+    __searchable__ = ['title', 'abstract', 'introduction']
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(32))
     abstract = db.Column(db.String(256))
@@ -418,19 +420,12 @@ class CourseComment(db.Model):
 
 db.event.listen(CourseComment.parent_id, 'set', CourseComment.on_changed_parent_id)
 
-# class CourseReply(db.Model):
-#     __tablename__ = 'coursereply'
-#     id = db.Column(db.Integer, primary_key=True)
-#     body = db.Column(db.Text)
-#     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-#     # coursecomment_id = db.Column(db.Integer, db.ForeignKey('coursecomment.id'))
-
 class School(db.Model):
     __tablename__ = 'school'
+    __searchable__ = ['collegename', 'actualname', 'introduction', 'introduction2']
     id = db.Column(db.Integer, primary_key=True)
-    collegename = db.Column(db.String(32))
-    actualname = db.Column(db.String(32))
-    officialname = db.Column
+    collegename = db.Column(db.String(32), unique=True)
+    actualname = db.Column(db.String(64))
     courses = db.relationship('Course', backref='school', lazy='dynamic')
     introduction = db.Column(db.Text)
     introduction2 = db.Column(db.Text)
@@ -441,10 +436,14 @@ class School(db.Model):
 
     @staticmethod
     def insert_schools():
-        schools = ['chengdian', 'fudan', 'dongnan', 'zhongkeyuan']
+        schools = [('chengdian', u'电子科技大学,成都电子科技大学,成电'),
+                   ('fudan', u'复旦大学'),
+                   ('dongnan', u'东南大学,东大'),
+                   ('zhongkeyuan', u'中国科学院大学微电子所,中科院微电子所')]
         for s in schools:
-            school = School.query.filter_by(collegename=s).first()
-            if school is None:
-                school = School(collegename=s)
-                db.session.add(school)
+            # school = School.query.filter_by(collegename=s).first()
+            # if school is None:
+            school = School(collegename=s[0],
+                            actualname=s[1])
+            db.session.add(school)
         db.session.commit()

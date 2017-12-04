@@ -14,7 +14,8 @@ import random
 
 @main.route('/empty')
 def emptypage():
-    imgnum = random.randint(1, 2)
+    # imgnum = random.randint(1, 2)
+    imgnum = 1
     return render_template('empty.html', imgurl=url_for('static', filename='coderimg/'+str(imgnum)+'.jpg'))
 
 @main.route('/', methods=['GET', 'POST'])
@@ -88,7 +89,6 @@ def edit_profile_admin(id):
     user = User.query.get_or_404(id)
     form = EditProfileAdminForm(user=user)
     if form.validate_on_submit():
-        user.email = form.email.data
         user.username = form.username.data
         user.confirmed = form.confirmed.data
         user.role = Role.query.get(form.role.data)
@@ -98,7 +98,6 @@ def edit_profile_admin(id):
         db.session.add(user)
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
-    form.email.data = user.email
     form.username.data = user.username
     form.confirmed.data = user.confirmed
     form.role.data = user.role_id

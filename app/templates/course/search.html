@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}用芯学 - 搜索{% endblock %}
+
+
+{% block page_content %}
+
+{% if schools %}
+<div class="page-header">
+    <h1>学校</h1>
+</div>
+{% for school in schools %}
+    <h3>
+        <a href="{{ url_for('course.college', collegename=school.collegename) }}">{{ school.actualname.split(',')[0] }}</a>
+    </h3>
+{% endfor %}
+{% endif %}
+
+{% if teachers %}
+<div class="search-course">
+<div class="page-header">
+    <h1>老师</h1>
+</div>
+    {% for teacher in teachers %}
+    <div class="col-md-3">
+    <div>
+        <h4>
+        <a href="{{ url_for('main.user', username=teacher.username) }}">
+            <img id="teacher-img" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
+            {{ teacher.name }}</a>
+        </h4>
+        <p>{{ teacher.about_me }}</p>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if courses %}
+<div class="search-course">
+<div class="page-header">
+    <h1>课程</h1>
+</div>
+{% for course in courses %}
+    <div class="user-course">
+        <div class="user-course-pic">
+        <a href="{{ url_for('course.classes', id=course.id) }}">
+            <img id="course-img" src="{% if course.img_url %}{{ course.img_url }}{% else %}{{ url_for('static', filename='img/coursedefault.png') }}{% endif %}" alt="" width="100%" height="100%">
+        </a>
+        </div>
+        <div class="user-course-content">
+            <h4><a href="{{ url_for('course.classes', id=course.id) }}">{{ course.title }}</a></h4>
+            <p>{{ course.abstract }}</p>
+            <div class="user-course-footer">
+                <span class="label label-primary">￥{{ course.price }}</span>
+                <span class="label label-primary"><span class="glyphicon glyphicon-user "></span>  {{ course.students.count() }}</span>
+                <a href="{{ url_for('course.classes', id=course.id) }}"><span class="label label-danger">查看详情</span></a>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endif %}
+
+{% if not schools and not courses and not teachers %}
+<div class="page-header">
+    <h2>没有搜到相关老师或课程，换个关键词试试</h2>
+</div>
+{% endif %}
+
+{% endblock %}

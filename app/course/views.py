@@ -221,3 +221,12 @@ def professor_manager():
     pagination = professor_tobe.paginate(page, per_page=20, error_out=False)
     professors = pagination.items
     return render_template('course/professor_manage.html', professors=professors, pagination=pagination)
+
+@course.route("/search")
+def w_search():
+    keyword = request.args.get('q')
+    courses = Course.query.msearch(keyword, fields=['title', 'abstract', 'introduction'], or_=True).all()
+    teacherrole = Role.query.filter_by(name='Teacher').first_or_404()
+    teachers = User.query.filter_by(role=teacherrole).msearch(keyword, fields=['username', 'name', 'about_me'], or_=True).all()
+    schools = School.query.msearch(keyword, fields=['collegename', 'actualname', 'introduction', 'introduction2'], or_=True).all()
+    return render_template('course/search.html', teachers=teachers, courses=courses, schools=schools)

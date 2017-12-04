@@ -54,10 +54,11 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="hidden-xs">
                     <form action="/search" class="navbar-form">
-                        <div class="form-group">
-                            <input name="q" type="text" class="form-control" placeholder="搜索问题或关键字" value="">
+                        <div class="form-group has-feedback">
+                            <input id="search" name="q" type="text" class="form-control" placeholder="课程或教师">
+                            <span class="glyphicon glyphicon-search form-control-feedback">
                         </div>
-                        <button class="btn btn-link"><span class="glyphicon glyphicon-search"></span></button>
+{#                        <button class="btn btn-link"><span class="glyphicon glyphicon-search"></span></button>#}
                     </form>
                 </li>
                 {% if current_user.can(Permission.ADD_CLASS) %}
