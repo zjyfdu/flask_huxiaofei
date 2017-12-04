@@ -115,6 +115,10 @@ class User(UserMixin, db.Model):
         from datetime import datetime
         admin = Role.query.filter_by(name='Administrator').first()
         student = Role.query.filter_by(name='Student').first()
+        u = User.query.filter_by(username='zhaijy').first()
+        if u:
+            db.session.delete(u)
+            db.session.commit()
         u = User(email='zhaijymail@163.com',
              cellphone='13122358292',
              username='zhaijy',
@@ -131,6 +135,10 @@ class User(UserMixin, db.Model):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
+        u = User.query.filter_by(username='zhaijy2').first()
+        if u:
+            db.session.delete(u)
+            db.session.commit()
         s = User(cellphone='13122358291',
              username='zhaijy2',
              password='3020282zjyd',
@@ -190,6 +198,7 @@ class User(UserMixin, db.Model):
             self.avatar_hash = hashlib.md5(
                 self.username.encode('utf-8')).hexdigest()
         self.followed.append(Follow(followed=self))
+        self.avatar_url = self.gravatar(size=280)
 
     @property
     def password(self):
@@ -267,10 +276,7 @@ class User(UserMixin, db.Model):
         db.session.add(self)
 
     def gravatar(self, size=100, default='identicon', rating='g'):
-        if request.is_secure:
-            url = 'https://secure.gravatar.com/avatar'
-        else:
-            url = 'http://www.gravatar.com/avatar'
+        url = 'http://www.gravatar.com/avatar'
         hash = self.avatar_hash or hashlib.md5(
             self.username.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
