@@ -7,6 +7,7 @@
 {% block page_content %}
 
 {% if schools %}
+<div class="search-school col-md-12">
 <div class="page-header">
     <h1>学校</h1>
 </div>
@@ -15,30 +16,29 @@
         <a href="{{ url_for('course.college', collegename=school.collegename) }}">{{ school.actualname.split(',')[0] }}</a>
     </h3>
 {% endfor %}
+</div>
 {% endif %}
 
 {% if teachers %}
-<div class="search-course">
+<div class="search-teacher col-md-12">
 <div class="page-header">
     <h1>老师</h1>
 </div>
-    {% for teacher in teachers %}
-    <div class="col-md-3">
-    <div>
-        <h4>
-        <a href="{{ url_for('main.user', username=teacher.username) }}">
-            <img id="teacher-img" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
-            {{ teacher.name }}</a>
-        </h4>
-        <p>{{ teacher.about_me }}</p>
-    </div>
-    {% endfor %}
-    </div>
+{% for teacher in teachers %}
+<div class="col-md-6">
+    <h4>
+    <a href="{{ url_for('main.user', username=teacher.username) }}">
+        <img id="teacher-img" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
+        {{ teacher.name }}</a>
+    </h4>
+    <p>{{ teacher.about_me }}</p>
+</div>
+{% endfor %}
 </div>
 {% endif %}
 
 {% if courses %}
-<div class="search-course">
+<div class="search-course col-md-12">
 <div class="page-header">
     <h1>课程</h1>
 </div>
