@@ -18,3 +18,4 @@ TODO LIST
 2. 支付宝接入
 3. 课程评论是否显示字段
 6. 打log
+5. search写好了，加一点search.update_index()
