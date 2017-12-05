@@ -38,7 +38,7 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
 if __name__ == '__main__':
-    if len(sys.argv)>=2 and sys.argv[1] in ['shell', 'db', 'renewdb']:
+    if len(sys.argv)>=2 and sys.argv[1] not in ['shell', 'db', 'renewdb']:
         p = multiprocessing.Process(target=update_index)
         p.start()
     manager.run()
