@@ -20,7 +20,7 @@ def renewdb():
     db.drop_all()
     db.create_all()
     Role.insert_roles()
-    User.fuck_me()
+    User.generate_me()
     School.insert_schools()
 
 @manager.command
@@ -38,6 +38,7 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
 if __name__ == '__main__':
-    p = multiprocessing.Process(target=update_index)
-    p.start()
+    if len(sys.argv)>=2 and sys.argv[1] in ['shell', 'db', 'renewdb']:
+        p = multiprocessing.Process(target=update_index)
+        p.start()
     manager.run()

@@ -126,7 +126,7 @@ class User(UserMixin, db.Model):
              confirmed=True,
              name='admin',
              location='shanghai',
-             about_me='管理员账号',
+             about_me='admin user',
              collegename='chengdian',
              member_since=datetime.now(),
              role=admin)
@@ -145,7 +145,7 @@ class User(UserMixin, db.Model):
              confirmed=True,
              name='teacher',
              location='shanghai',
-             about_me='教师账号',
+             about_me='teacher account',
              collegename='chengdian',
              member_since=datetime.now(),
              role=student)
