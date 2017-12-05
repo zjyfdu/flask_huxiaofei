@@ -116,7 +116,7 @@ class User(UserMixin, db.Model):
         from datetime import datetime
         admin = Role.query.filter_by(name='Administrator').first()
         student = Role.query.filter_by(name='Student').first()
-        u = User.query.filter_by(username='zhaijy').first()
+        u = User.query.filter_by(username='admin').first()
         if u:
             db.session.delete(u)
             db.session.commit()
@@ -135,7 +135,7 @@ class User(UserMixin, db.Model):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-        u = User.query.filter_by(username='zhaijy2').first()
+        u = User.query.filter_by(username='teacher').first()
         if u:
             db.session.delete(u)
             db.session.commit()
