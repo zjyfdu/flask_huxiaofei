@@ -57,7 +57,7 @@ class PhoneRegistrationForm(FlaskForm):
         code = int(self.cellphone.data)
         code = str(code%1048577)[:6]
         if field.data!=code:
-            raise ValidationError(u'验证码错误。')
+            raise ValidationError(u'验证码错误，请重试。')
 
 
 class ChangePasswordForm(FlaskForm):
@@ -90,7 +90,7 @@ class PasswordResetRequestForm(FlaskForm):
         code = int(self.cellphone.data)
         code = str(code%1048577)[:6]
         if field.data!=code:
-            raise ValidationError(u'验证码错误。')
+            raise ValidationError(u'验证码错误，请重试。')
 
 class PasswordResetForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),

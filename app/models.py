@@ -111,7 +111,7 @@ class User(UserMixin, db.Model):
                                       lazy='dynamic')
 
     @staticmethod
-    def fuck_me():
+    def generate_me():
         from sqlalchemy.exc import IntegrityError
         from datetime import datetime
         admin = Role.query.filter_by(name='Administrator').first()
@@ -120,14 +120,13 @@ class User(UserMixin, db.Model):
         if u:
             db.session.delete(u)
             db.session.commit()
-        u = User(email='zhaijymail@163.com',
-             cellphone='13122358292',
-             username='zhaijy',
-             password='3020282zjyd',
+        u = User(cellphone='13122358292',
+             username='admin',
+             password='yongxinxue',
              confirmed=True,
-             name='zhaijy',
+             name='admin',
              location='shanghai',
-             about_me='fuck me',
+             about_me='管理员账号',
              collegename='chengdian',
              member_since=datetime.now(),
              role=admin)
@@ -141,12 +140,12 @@ class User(UserMixin, db.Model):
             db.session.delete(u)
             db.session.commit()
         s = User(cellphone='13122358291',
-             username='zhaijy2',
-             password='3020282zjyd',
+             username='teacher',
+             password='yongxinxue',
              confirmed=True,
-             name='zhaijy2',
+             name='teacher',
              location='shanghai',
-             about_me='fuck me',
+             about_me='教师账号',
              collegename='chengdian',
              member_since=datetime.now(),
              role=student)

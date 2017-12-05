@@ -5,7 +5,6 @@
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
-import uuid
 
 from aliyunsdkdysmsapi.request.v20170525 import SendSmsRequest
 from aliyunsdkdysmsapi.request.v20170525 import QuerySendDetailsRequest
