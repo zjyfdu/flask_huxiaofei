@@ -83,7 +83,7 @@
     <h4>老师</h4><hr>
     {% for teacher in course.teachers %}
     <div>
-        <h4 class="col-md-offset-2">
+        <h4 style="margin-bottom: 20px">
         <a href="{{ url_for('main.user', username=teacher.username) }}">
             <img id="teacher-img" class="img-rounded" src="{% if teacher.avatar_url %}{{ teacher.avatar_url }}{% else %}{{ teacher.gravatar() }}{% endif %}">
             {{ teacher.name }}</a>

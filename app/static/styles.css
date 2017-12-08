@@ -120,8 +120,8 @@ div.flask-pagedown-preview h3 {
 }
 
 #footer .app-qrcode {
-    width: 64px;
-    height: 64px;
+    width: 70px;
+    height: 90px;
 }
 
 #footer .copyright {
@@ -146,7 +146,7 @@ div.flask-pagedown-preview h3 {
 #teacher-img {
     height: 50px;
     width: 50px;
-    border-radius: 25px;
+    /*border-radius: 25px;*/
 }
 
 #course-img {
@@ -217,10 +217,10 @@ div.user-course-footer {
     margin-top: 0px;
 }
 
-.jumbotron li > p{
-    margin-bottom: 0px;
-    margin-top: 0px;
-}
+/*.jumbotron li > p{*/
+    /*margin-bottom: 0px;*/
+    /*margin-top: 0px;*/
+/*}*/
 
 .jumbotron h1 small {
     color: black;
@@ -239,10 +239,15 @@ div.user-course-footer {
 
 div.school-banner {
     border-radius: 6px; !important;
-    border: 1px solid grey;
+    /*border: 1px solid grey;*/
     margin-bottom: 30px;
 }
 
 html,body { height: 100%;}
-.wrap-body { min-height: 100%; padding: 0 0 104px; overflow: hidden}
-.wrap-footer { height:104px; margin-top: -104px; width: 100%}
+.wrap-body { min-height: 100%; padding: 0 0 130px; overflow: hidden}
+.wrap-footer { height:130px; margin-top: -130px; width: 100%; min-height: 130px}
+#footer {min-height: 130px}
+
+dl.loose > dd {
+    margin-bottom: 5px;
+}

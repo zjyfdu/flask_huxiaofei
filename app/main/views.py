@@ -297,7 +297,11 @@ def ckupload():
     res = """<script type="text/javascript">
   window.parent.CKEDITOR.tools.callFunction(%s, '%s', '%s');
 </script>""" % (callback, url, error)
-
+    responseType = request.args.get("responseType")
+    if responseType=='json':
+        return jsonify({"uploaded": 1,
+                        "fileName": rnd_name,
+                        "url": url})
     response = make_response(res)
     response.headers["Content-Type"] = "text/html"
     return response
