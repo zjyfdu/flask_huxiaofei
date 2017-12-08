@@ -300,7 +300,7 @@ def ckupload():
     responseType = request.args.get("responseType")
     if responseType=='json':
         return jsonify({"uploaded": 1,
-                        "fileName": rnd_name,
+                        "fileName": fileobj.filename,
                         "url": url})
     response = make_response(res)
     response.headers["Content-Type"] = "text/html"
