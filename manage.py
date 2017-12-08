@@ -25,9 +25,7 @@ def renewdb():
 
 @manager.command
 def update_index():
-    while True:
-        time.sleep(600)
-        search.update_index()
+    search.update_index()
 
 def make_shell_context():
     return dict(app=app, db=db, User=User, Follow=Follow, Role=Role,
@@ -38,6 +36,7 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
 if __name__ == '__main__':
+    search.create_index()
     if len(sys.argv)>=2 and sys.argv[1] not in ['shell', 'db', 'renewdb']:
         p = multiprocessing.Process(target=update_index)
         p.start()
