@@ -9,7 +9,6 @@ from app import create_app, db, search
 from app.models import User, Follow, Role, Permission, Post, Comment, Course, School, CourseComment
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
-import multiprocessing, time
 
 app = create_app('default')
 manager = Manager(app)
@@ -24,6 +23,10 @@ def renewdb():
     School.insert_schools()
 
 @manager.command
+def create_index():
+    search.create_index()
+
+@manager.command
 def update_index():
     search.update_index()
 
@@ -36,8 +39,4 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command("db", MigrateCommand)
 
 if __name__ == '__main__':
-    search.create_index()
-    if len(sys.argv)>=2 and sys.argv[1] not in ['shell', 'db', 'renewdb']:
-        p = multiprocessing.Process(target=update_index)
-        p.start()
     manager.run()

@@ -276,8 +276,9 @@ def ckupload():
 
     if request.method == 'POST' and 'upload' in request.files:
         fileobj = request.files['upload']
-        fname, fext = os.path.splitext(fileobj.filename)
-        rnd_name = '%s%s' % (gen_rnd_filename(), fext)
+        # fname, fext = os.path.splitext(fileobj.filename)
+        # rnd_name = '%s%s' % (gen_rnd_filename(), fext)
+        rnd_name = fileobj.filename
         filepath = os.path.join(current_app.static_folder, 'upload', rnd_name)
         dirname = os.path.dirname(filepath)
         if not os.path.exists(dirname):
@@ -294,14 +295,14 @@ def ckupload():
     else:
         error = 'post error'
 
+    responseType = request.args.get("responseType")
+    if not error and responseType=='json':
+        return jsonify({"uploaded": 1,
+                        "fileName": rnd_name,
+                        "url": url})
     res = """<script type="text/javascript">
   window.parent.CKEDITOR.tools.callFunction(%s, '%s', '%s');
 </script>""" % (callback, url, error)
-    responseType = request.args.get("responseType")
-    if responseType=='json':
-        return jsonify({"uploaded": 1,
-                        "fileName": fileobj.filename,
-                        "url": url})
     response = make_response(res)
     response.headers["Content-Type"] = "text/html"
     return response
