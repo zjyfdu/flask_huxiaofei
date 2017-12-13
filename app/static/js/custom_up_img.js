@@ -1,7 +1,7 @@
 $(document).ready(function(){
-        $("#up-img-touch").click(function(){
-        		  $("#doc-modal-1").modal({width:'600px'});
-        });
+    $("#up-img-touch").click(function(){
+        $("#doc-modal-1").modal({width:'600px'});
+    });
 });
 $(function() {
     'use strict';
@@ -11,7 +11,6 @@ $(function() {
         aspectRatio: '1',
         autoCropArea:0.8,
         preview: '.up-pre-after',
-        
     });
 
     // 事件代理绑定事件

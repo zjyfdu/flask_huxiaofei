@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-import os
 from app import create_app, db, search
 from app.models import User, Follow, Role, Permission, Post, Comment, Course, School, CourseComment
 from flask_script import Manager, Shell
@@ -40,3 +38,5 @@ manager.add_command("db", MigrateCommand)
 
 if __name__ == '__main__':
     manager.run()
+    app.run()
+
