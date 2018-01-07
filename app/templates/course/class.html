@@ -33,10 +33,17 @@
 
 <div class="col-md-9" style="padding-left: 0px;">
 <ul id="myTab" class="nav nav-tabs">
+{#    {% if course in current_user.studentscourses %}#}
+{#	<li class="active"><a href="#intro2" data-toggle="tab">课程资料</a></li>#}
+{#    {% endif %}#}
+{#    <li {% if course not in current_user.studentscourses %}class="active"{% endif %}><a href="#intro" data-toggle="tab">课程介绍</a></li>#}
+{#	<li><a href="#content" data-toggle="tab">学习入口</a></li>#}
+{#	<li><a href="#question" data-toggle="tab">我要提问</a></li>    #}
+    <li class="active"><a href="#intro" data-toggle="tab">课程介绍</a></li>
     {% if course in current_user.studentscourses %}
-	<li class="active"><a href="#intro2" data-toggle="tab">课程资料</a></li>
+	<li><a href="#intro2" data-toggle="tab">课程资料</a></li>
     {% endif %}
-    <li {% if course not in current_user.studentscourses %}class="active"{% endif %}><a href="#intro" data-toggle="tab">课程介绍</a></li>
+	<li><a href="#content" data-toggle="tab">学习入口</a></li>
 	<li><a href="#question" data-toggle="tab">我要提问</a></li>
 </ul>
 <div id="myTabContent" class="tab-content">
@@ -47,6 +54,34 @@
     {% endif %}
 	<div class="tab-pane fade in {% if course not in current_user.studentscourses %}active{% endif %}" id="intro">
 		{{ course.introduction|safe }}
+	</div>
+	<div class="tab-pane fade in" id="content">
+
+    <table class="table table-hover">
+    <caption>目录</caption>
+
+{#	<thead>#}
+{#		<tr>#}
+{#			<th>名称</th>#}
+{#			<th> </th>#}
+{#		</tr>#}
+{#	</thead>#}
+	<tbody>
+        {% for post in course.courseposts %}
+        <tr>
+			<td><a href="{{ url_for('course.post', id=post.id) }}">{{ post.title }}</a></td>
+			<td>
+                {% if not post.course_free and course not in current_user.studentscourses %}
+                <span class="glyphicons glyphicons-lock"></span></td>
+                {% else %}
+                <span class="glyphicons glyphicons-unlock"></span>
+                {% endif %}
+        </tr>
+        {% endfor %}
+	</tbody>
+</table>
+
+
 	</div>
 	<div class="tab-pane fade in" id="question">
         <form method="post" class="form" role="form">
@@ -78,6 +113,7 @@
 {% if current_user in course.teachers or current_user.is_administrator() %}
 <a class="btn btn-danger class-btn" href="{{ url_for('course.editcourse', id=course.id) }}">编辑课程</a>
 <a class="btn btn-danger class-btn" href="{{ url_for('course.removecourse', id=course.id) }}">删除课程</a>
+<a class="btn btn-danger class-btn" href="{{ url_for('course.add_course_post', id=course.id) }}">添加课程目录</a>
 {% endif %}
 <div class="teacher">
     <h4>老师</h4><hr>

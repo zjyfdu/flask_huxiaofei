@@ -55,7 +55,8 @@ var _hmt = _hmt || [];
                         <li><a href="{{ url_for('main.emptypage') }}">中科院</a></li>
                     </ul>
                 </li>
-{#                <li><a href="{{ url_for('main.emptypage') }}">出国</a></li>#}
+                <li><a href="{{ url_for('main.index') }}">讨论区</a></li>
+{#                {{ url_for('main.emptypage') }}#}
 {#                <li><a href="{{ url_for('main.emptypage') }}">微电子培训</a></li>#}
             </ul>
 
@@ -63,7 +64,7 @@ var _hmt = _hmt || [];
                 <li class="hidden-xs">
                     <form action="/search" class="navbar-form">
                         <div class="form-group has-feedback">
-                            <input id="search" name="q" type="text" class="form-control" placeholder="课程或教师">
+                            <input id="search" name="q" type="text" class="form-control" placeholder="搜索">
                             <span class="glyphicon glyphicon-search form-control-feedback">
                         </div>
 {#                        <button class="btn btn-link"><span class="glyphicon glyphicon-search"></span></button>#}
@@ -77,7 +78,7 @@ var _hmt = _hmt || [];
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('course.addcourse') }}">添加课程</a></li>
                         {% if current_user.can(Permission.MANAGE_TEACHER) %}
-                        <li><a href="{{ url_for('course.professor_manager') }}">批准老师</a></li>
+                        <li><a href="{{ url_for('course.professor_manager') }}">用户管理</a></li>
                         {% endif %}
                     </ul>
                 </li>
@@ -129,7 +130,7 @@ var _hmt = _hmt || [];
             <dd><img src="{{ url_for('static', filename='img/wechatQR2.png') }}" class="app-qrcode"></dd>
         </dl>
         <dl class="loose">
-            <dd><a href="/about">关于我们</a> | <a href="/contact">联系我们</a> | <a href="/hiring">加入我们</a> | <a href="/faq">帮助中心</a> | <a href="/website">网站相关</a> | <a href="{{ url_for('main.index') }}">意见反馈</a></dd>
+            <dd><a href="/about">关于我们</a> | <a href="/contact">联系我们</a> | <a href="/hiring">加入我们</a> | <a href="/faq">帮助中心</a> | <a href="/website">网站相关</a> | <a href="/feedback">意见反馈</a></dd>
             <dd>用芯学(上海)信息技术有限责任公司</dd>
             <dd><a href="http://www.miibeian.gov.cn/" target="_blank">沪ICP备17054348号</a></dd>
         </dl>

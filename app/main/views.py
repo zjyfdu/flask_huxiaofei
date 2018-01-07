@@ -6,7 +6,7 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm, ProfessorForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, Course
+from ..models import Permission, Role, User, Post, Comment, Course, Topic
 from ..decorators import admin_required, permission_required
 import os
 import datetime
@@ -20,28 +20,36 @@ def emptypage():
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
-            form.validate_on_submit():
-        print form.body.data
-        post = Post(body=form.body.data,
-                    author=current_user._get_current_object())
-        db.session.add(post)
-        return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
-    show_followed = False
-    if current_user.is_authenticated:
-        show_followed = bool(request.cookies.get('show_followed', ''))
-    if show_followed:
+    topics = Topic.query.all()
+    show_followed = request.cookies.get('show_followed', '')
+    if not show_followed:
+        query = Post.query
+    elif show_followed=='0':
         query = current_user.followed_posts
     else:
-        query = Post.query
-    pagination = query.order_by(Post.timestamp.desc()).paginate(
+        topic = Topic.query.filter_by(id=int(show_followed)).first()
+        query = Post.query.filter_by(topic=topic)
+    pagination = query.order_by(Post.last_update.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    return render_template('main/index.html', form=form, posts=posts,
+    return render_template('main/index.html', posts=posts, topics=topics,
                            show_followed=show_followed, pagination=pagination)
+
+@main.route('/add_post', methods=['GET', 'POST'])
+@login_required
+def add_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title = form.title.data,
+                    body=form.body.data,
+                    author=current_user._get_current_object(),
+                    topic_id=form.topic.data)
+        db.session.add(post)
+        return redirect(url_for('.index'))
+    return render_template('main/add_post.html', form=form)
+
 
 @main.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
@@ -109,40 +117,55 @@ def edit_profile_admin(id):
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
+    if post.belong_to_course:
+        return redirect(url_for('course.post', id=id))
     form = CommentForm()
     if form.validate_on_submit():
+        if current_user.is_anonymous:
+            return current_app.login_manager.unauthorized()
         comment = Comment(body=form.body.data,
                           post=post,
-                          author=current_user._get_current_object())
+                          author=current_user._get_current_object(),
+                          parent_id=form.parent_id.data)
         db.session.add(comment)
-        flash('Your comment has been published.')
+        post.last_update = datetime.datetime.utcnow()
+        db.session.add(post)
         return redirect(url_for('.post', id=post.id, page=-1))
-    page = request.args.get('page', 1, type=int)
-    if page == -1:
-        page = (post.comments.count() - 1) // \
-            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
-    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
-        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
-        error_out=False)
-    comments = pagination.items
-    return render_template('main/post.html', posts=[post], form=form,
-                           comments=comments, pagination=pagination)
+    # page = request.args.get('page', 1, type=int)
+    # postcomments = post.comments.filter(not Comment.parent)
+    # if page == -1:
+    #     page = (postcomments.count() - 1) // \
+    #         current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+    # pagination = postcomments.order_by(Comment.timestamp.asc()).paginate(
+    #     page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+    #     error_out=False)
+    # comments = pagination.items
+    comments = [comment for comment in post.comments if not comment.parent]
+    return render_template('main/post.html', post=post, form=form,
+                           comments=comments)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit(id):
     post = Post.query.get_or_404(id)
+    if post.belong_to_course:
+        return redirect(url_for('course.edit_post', id=id))
     if current_user != post.author and \
             not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+        post.title = form.title.data
         post.body = form.body.data
+        post.topic_id = form.topic.data
+        post.last_update = datetime.datetime.utcnow()
         db.session.add(post)
         flash('The post has been updated.')
         return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
+    form.title.data = post.title
+    form.topic.data = post.topic_id
     return render_template('main/edit_post.html', form=form)
 
 
@@ -220,11 +243,11 @@ def show_all():
     return resp
 
 
-@main.route('/followed')
+@main.route('/followed/<id>')
 @login_required
-def show_followed():
+def show_followed(id):
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    resp.set_cookie('show_followed', id, max_age=30*24*60*60)
     return resp
 
 

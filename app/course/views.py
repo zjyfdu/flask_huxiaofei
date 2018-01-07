@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, redirect, request, url_for, flash, current_app, abort, jsonify
+from flask import render_template, redirect, request, url_for, flash, current_app, abort
 from . import course
 from .. import db
-from ..models import User, Course, Role, Permission, School, CourseComment
-from .forms import CourseForm, CourseFormAdmin, SchoolFormAdmin, CourseCommentForm
+from ..models import User, Course, Role, Permission, School, CourseComment, Post
+from .forms import CourseForm, CourseFormAdmin, SchoolFormAdmin, CourseCommentForm, CoursePostForm
 from PIL import Image
 from flask_login import current_user, login_required
 from datetime import datetime
@@ -50,6 +50,8 @@ def classes(id):
     course = Course.query.get_or_404(id)
     form = CourseCommentForm()
     if form.validate_on_submit():
+        if current_user.is_anonymous:
+            return current_app.login_manager.unauthorized()
         coursecomment = CourseComment(user=current_user,
                                       course=course,
                                       body=form.body.data,
@@ -63,6 +65,7 @@ def classes(id):
     coursecomments = [comment for comment in course.coursecomments if not comment.parent]
     return render_template('course/class.html', course=course, form=form,
                            coursecomments=coursecomments)
+
 
 @course.route('/addcourse', methods=['GET', 'POST'])
 def addcourse():
@@ -216,9 +219,8 @@ def professor_manager():
     if not current_user.is_administrator():
         abort(403)
     page = request.args.get('page', 1, type=int)
-    student = Role.query.filter_by(name='Student').first_or_404()
-    professor_tobe = User.query.filter(User.role==student, User.teacher_date, User.apply_message!='r1ejected').order_by(User.teacher_date)
-    pagination = professor_tobe.paginate(page, per_page=20, error_out=False)
+    professor_tobe = User.query.order_by(User.last_seen)
+    pagination = professor_tobe.paginate(page, per_page=50, error_out=False)
     professors = pagination.items
     return render_template('course/professor_manage.html', professors=professors, pagination=pagination)
 
@@ -229,4 +231,70 @@ def w_search():
     teacherrole = Role.query.filter_by(name='Teacher').first_or_404()
     teachers = User.query.filter_by(role=teacherrole).msearch(keyword, fields=['username', 'name', 'about_me'], or_=True).all()
     schools = School.query.msearch(keyword, fields=['collegename', 'actualname', 'introduction', 'introduction2'], or_=True).all()
-    return render_template('course/search.html', teachers=teachers, courses=courses, schools=schools)
+    posts = Post.query.msearch(keyword, fields=['title', 'body'], or_=True).all()
+    return render_template('course/search.html', teachers=teachers, courses=courses, schools=schools, posts=posts)
+
+@course.route("/add_course_post/<int:id>", methods=['GET', 'POST'])
+def add_course_post(id):
+    form = CoursePostForm()
+    course = Course.query.filter_by(id=id).first_or_404()
+    if current_user not in course.teachers and not current_user.is_administrator():
+        abort(403)
+    if form.validate_on_submit():
+        post = Post(title=form.title.data,
+                    body=form.body.data,
+                    course_free=form.free.data,
+                    author=current_user._get_current_object(),
+                    course_id=id,
+                    belong_to_course=True)
+        db.session.add(post)
+        return redirect(url_for('.classes', id=id))
+    return render_template('main/add_post.html', form=form)
+
+@course.route('/edit_post/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_post(id):
+    post = Post.query.get_or_404(id)
+    course = post.course
+    if not post.belong_to_course:
+        return redirect(url_for('main.edit', id=id))
+    if current_user not in course.teachers and not current_user.is_administrator():
+        abort(403)
+    form = CoursePostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.body = form.body.data
+        post.course_free = form.free.data
+        post.last_update = datetime.datetime.utcnow()
+        db.session.add(post)
+        flash('The post has been updated.')
+        return redirect(url_for('.classes', id=id))
+    form.body.data = post.body
+    form.title.data = post.title
+    form.free.data = post.course_free
+    return render_template('main/edit_post.html', form=form)
+
+@course.route('/post/<int:id>', methods=['GET', 'POST'])
+def post(id):
+    post = Post.query.get_or_404(id)
+    if not post.belong_to_course:
+        return redirect(url_for('main.post', id=id))
+    if not post.course_free \
+            and current_user not in course.teachers \
+            and not current_user.is_administrator():
+        flash("请先加入该课程")
+        return redirect(url_for('course.classes', id=post.course.id))
+    # form = CommentForm()
+    # if form.validate_on_submit():
+    #     if current_user.is_anonymous:
+    #         return current_app.login_manager.unauthorized()
+    #     comment = Comment(body=form.body.data,
+    #                       post=post,
+    #                       author=current_user._get_current_object(),
+    #                       parent_id=form.parent_id.data)
+    #     db.session.add(comment)
+    #     post.last_update = datetime.datetime.utcnow()
+    #     db.session.add(post)
+    #     return redirect(url_for('.post', id=post.id, page=-1))
+    # comments = [comment for comment in post.comments if not comment.parent]
+    return render_template('course/post.html', post=post)

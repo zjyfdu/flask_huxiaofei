@@ -309,6 +309,7 @@ class User(UserMixin, db.Model):
         return '<User %r>' % self.username
 
 
+
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
         return False
@@ -323,14 +324,43 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+class Topic(db.Model):
+    __tablename__ = 'topics'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    posts = db.relationship('Post', backref='topic', lazy='dynamic')
+
+    @staticmethod
+    def insert_topics():
+        topics = [u'复旦', u'成电', u'东南', u'中科院']
+        for t in topics:
+            topic = Topic.query.filter_by(name=t).first()
+            if topic is None:
+                topic = Topic(name=t)
+            db.session.add(topic)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Topic %r>' % self.name
+
 
 class Post(db.Model):
+    """
+    有普通post和课程post两种，通过belongtocourse区分
+    """
     __tablename__ = 'posts'
+    __searchable__ = ['title', 'body']
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128))
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    last_update = db.Column(db.DateTime, default=datetime.utcnow)
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id')) #普通post的
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id')) #课程post的
+    belong_to_course = db.Column(db.Boolean, default=False) #是否为课程的post
+    course_free = db.Column(db.Boolean, default=False) #课程是否免费
 
     @staticmethod
     def generate_fake(count=100):
@@ -347,6 +377,32 @@ class Post(db.Model):
             db.session.add(p)
             db.session.commit()
 
+class Comment(db.Model):
+    """
+    post comment
+    """
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+    parent = db.relationship('Comment', remote_side=[id], backref=db.backref('children'))
+    childrencount = db.Column(db.Integer, default=0)
+
+    @staticmethod
+    def on_changed_parent_id(target, value, oldvalue, initiator):
+        current = Comment.query.filter_by(id=value).first()
+        while current:
+            current.childrencount += 1
+            db.session.add(current)
+            db.session.commit()
+            current = current.parent
+
+db.event.listen(Comment.parent_id, 'set', Comment.on_changed_parent_id)
+
 class Course(db.Model):
     __tablename__ = 'courses'
     __searchable__ = ['title', 'abstract', 'introduction']
@@ -361,6 +417,7 @@ class Course(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
     coursecomments = db.relationship('CourseComment', backref='course', lazy='dynamic')
+    courseposts = db.relationship('Post', backref='course', lazy='dynamic')
 
 
     def __repr__(self):
@@ -383,19 +440,6 @@ class Course(db.Model):
             db.session.add(p)
             db.session.commit()
 
-class Comment(db.Model):
-    __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    # body_html = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    disabled = db.Column(db.Boolean)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-
-
-# 这个是我放在课程页面的，关于课程评论和回复的，可以放后面做
-
 class CourseComment(db.Model):
     __tablename__ = 'coursecomment'
     id = db.Column(db.Integer, primary_key=True)
@@ -414,7 +458,6 @@ class CourseComment(db.Model):
             current.childrencount += 1
             db.session.add(current)
             db.session.commit()
-            print current.childrencount
             current = current.parent
 
 db.event.listen(CourseComment.parent_id, 'set', CourseComment.on_changed_parent_id)

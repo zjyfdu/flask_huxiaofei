@@ -28,8 +28,9 @@ ul.posts li.post:hover {
 div.post-date {
     float: right;
 }
-div.post-author {
-    font-weight: bold;
+div.post-title {
+    /*font-weight: bold;*/
+    font-size: x-large;
 }
 div.post-thumbnail {
     position: absolute;

@@ -1,21 +1,75 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% import "main/_macros.html" as macros %}
+{#{% import "main/_macros.html" as macros %}#}
+{% import "main/_comments.html" as macros %}
 
 {% block title %}Flasky - Post{% endblock %}
 
 {% block page_content %}
-{% include 'main/_posts.html' %}
-<h4 id="comments">Comments</h4>
-{% if current_user.can(Permission.COMMENT) %}
-<div class="comment-form">
-    {{ wtf.quick_form(form) }}
-</div>
-{% endif %}
-{% include 'main/_comments.html' %}
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=posts[0].id) }}
-</div>
-{% endif %}
+
+
+    <div class="post">
+        <div class="post-thumbnail">
+            <a href="{{ url_for('.user', username=post.author.username) }}">
+                {% if post.author.avatar_url %}
+                <img class="img-rounded profile-thumbnail" style="height: 40px; width: 40px" src="{{ post.author.avatar_url }}">
+                {% else %}
+                <img class="img-rounded profile-thumbnail" src="{{ post.author.gravatar(size=40) }}">
+                {% endif %}
+            </a>
+        </div>
+        <div class="post-content">
+            <div class="post-date">{{ moment(post.timestamp).fromNow() }}发表{% if post.comments.count() %}，最近回复{{ moment(post.last_update).fromNow() }}{% endif %}</div>
+            <div class="post-author"><a href="{{ url_for('.user', username=post.author.username) }}">{{ post.author.username }}</a></div>
+            <div class="post-title">
+                <a href="{{ url_for('.post', id=post.id) }}">{{ post.title }}</a>
+            </div>
+            <div class="post-body">
+                {{ post.body|safe }}
+            </div>
+            <div class="post-footer">
+                {% if current_user == post.author %}
+                <a href="{{ url_for('.edit', id=post.id) }}">
+                    <span class="label label-primary">编辑</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.edit', id=post.id) }}">
+                    <span class="label label-danger">编辑[Admin]</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('.post', id=post.id) }}">
+                    <span class="label label-default">链接</span>
+                </a>
+                <a href="{{ url_for('.post', id=post.id) }}#comments">
+                    <span class="label label-primary">{{ post.comments.count() }}评论</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+<h4 id="comment">评论</h4>
+{{ macros.comment_macro(comments, form, moment) }}
+<form method="post" class="form" role="form">
+{{ form.csrf_token }}
+    <div class="form-group" style="display: none">
+        <label class="control-label" for="{{ form.parent_id.name }}">{{ form.parent_id.label }}</label>
+        {{ form.parent_id(class="form-control",id="parent_id",value=0) }}
+    </div>
+    <div class="form-group {% if form.body.errors %} has-error{% endif %}">
+        <label class="control-label" for="{{ form.body.name }}">{{ form.body.label }}</label>
+        {{ form.body(class="form-control",placeholder="我要提问") }}
+        {%- if form.body.errors %}
+          {%- for error in form.body.errors %}
+            <p class="help-block">{{error}}</p>
+          {%- endfor %}
+        {% endif %}
+    </div>
+    <input class="btn btn-default" id="submit" name="submit" type="submit" value="提交">
+</form>
+{#{% include 'main/_comments.html' %}#}
+{#{% if pagination %}#}
+{#<div class="pagination">#}
+{#    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=posts[0].id) }}#}
+{#</div>#}
+{#{% endif %}#}
 {% endblock %}

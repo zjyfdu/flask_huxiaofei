@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 from app import create_app, db, search
-from app.models import User, Follow, Role, Permission, Post, Comment, Course, School, CourseComment
+from app.models import User, Follow, Role, Permission, Post, Comment, Course, School, CourseComment, Topic
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -30,7 +30,7 @@ def update_index():
 
 def make_shell_context():
     return dict(app=app, db=db, User=User, Follow=Follow, Role=Role,
-                School=School, CourseComment=CourseComment,
+                School=School, CourseComment=CourseComment, Topic=Topic,
                 Permission=Permission, Post=Post, Comment=Comment, Course=Course)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 

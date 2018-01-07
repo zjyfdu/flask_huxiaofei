@@ -1,10 +1,10 @@
 # coding: utf-8
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
-    SubmitField, FileField
+    SubmitField, IntegerField
 from wtforms.validators import Length, Regexp, DataRequired
 from wtforms import ValidationError
-from ..models import Role, User
+from ..models import Role, User, Topic
 
 class EditProfileForm(FlaskForm):
     name = StringField('Real name', validators=[Length(0, 64)])
@@ -43,12 +43,21 @@ class EditProfileAdminForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
+    title = StringField("标题", validators=[DataRequired("内容不能为空")])
+    topic = SelectField('话题', coerce=int)
     body = TextAreaField("内容", validators=[DataRequired("内容不能为空")])
     submit = SubmitField('提交')
 
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.topic.choices = [(topic.id, topic.name)
+                             for topic in Topic.query.order_by(Topic.name).all()]
+        self.topic.choices.append((0, '无'))
+
 
 class CommentForm(FlaskForm):
-    body = StringField('评论', validators=[DataRequired()])
+    parent_id = IntegerField("")
+    body = StringField('', validators=[DataRequired()])
     submit = SubmitField('提交')
 
 class ProfessorForm(FlaskForm):

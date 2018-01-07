@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}用芯学 - 编辑帖子{% endblock %}
+{% block title %}用芯学 - 发布帖子{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -10,7 +10,7 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>编辑帖子</h1>
+    <h1>发布帖子</h1>
 </div>
 <div>
 {{ wtf.quick_form(form) }}

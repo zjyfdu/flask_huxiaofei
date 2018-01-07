@@ -63,7 +63,16 @@
 </div>
 {% endif %}
 
-{% if not schools and not courses and not teachers %}
+{% if posts %}
+    <div class="search-post col-md-12">
+        <div class="page-header">
+            <h1>课程</h1>
+        </div>
+        {% include 'main/_posts.html' %}
+    </div>
+{% endif %}
+
+{% if not schools and not courses and not teachers and not posts%}
 <div class="page-header">
     <h2>没有搜到相关老师或课程，换个关键词试试</h2>
 </div>

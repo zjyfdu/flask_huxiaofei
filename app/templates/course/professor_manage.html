@@ -8,20 +8,19 @@
 <script type="text/javascript" src="{{ url_for('static', filename='reveal.js') }}"></script>
 {% endblock %}
 
-{% block title %}用芯学 - 老师管理{% endblock %}
+{% block title %}用芯学 - 管理{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>老师管理</h1>
+    <h1>用户管理</h1>
 </div>
 {#<div class="col-md-9">#}
 <table class="table table-hover">
 	<thead>
 		<tr>
 			<th>用户名</th>
-			<th>手机</th>
-			<th>申请时间</th>
-            <th>申请信息</th>
+			<th>手机或邮箱</th>
+			<th>角色</th>
             <th>操作</th>
 		</tr>
 	</thead>
@@ -29,12 +28,12 @@
     {% for professor in professors %}
 		<tr>
 			<td>{{ professor.username }}</td>
-			<td>{{ professor.cellphone }}</td>
-			<td>{{ professor.teacher_date }}</td>
-            <td>{{ professor.apply_message }}</td>
+			<td>{% if professor.cellphone %}{{ professor.cellphone }}{% else %}{{ professor.email }}{% endif %}</td>
+			<td>{{ professor.role.name }}</td>
+{#            <td>{{ professor.apply_message }}</td>#}
             <td>
-                <a href="{{ url_for('course.add_professor', id=professor.id) }}?page={{ pagination.page }}">行</a>
-                 | <a href="{{ url_for('course.cancel_professor', id=professor.id) }}?page={{ pagination.page }}">不行</a>
+                <a href="{{ url_for('course.add_professor', id=professor.id) }}?page={{ pagination.page }}">变老师</a>
+{#                 | <a href="{{ url_for('course.cancel_professor', id=professor.id) }}?page={{ pagination.page }}">不行</a>#}
             </td>
 		</tr>
     {% endfor %}
