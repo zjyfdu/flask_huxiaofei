@@ -39,6 +39,6 @@ class CourseCommentForm(FlaskForm):
 
 class CoursePostForm(FlaskForm):
     title = StringField("标题", validators=[DataRequired("内容不能为空")])
-    free = BooleanField("是否为试听课", validators=[DataRequired("请选择")], default=False)
+    free = BooleanField("试听课")
     body = TextAreaField("内容", validators=[DataRequired("内容不能为空")])
     submit = SubmitField('提交')

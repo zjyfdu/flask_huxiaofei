@@ -60,22 +60,19 @@
     <table class="table table-hover">
     <caption>目录</caption>
 
-{#	<thead>#}
-{#		<tr>#}
-{#			<th>名称</th>#}
-{#			<th> </th>#}
-{#		</tr>#}
-{#	</thead>#}
 	<tbody>
         {% for post in course.courseposts %}
         <tr>
 			<td><a href="{{ url_for('course.post', id=post.id) }}">{{ post.title }}</a></td>
-			<td>
-                {% if not post.course_free and course not in current_user.studentscourses %}
-                <span class="glyphicons glyphicons-lock"></span></td>
+			<td class="text-right">
+                {% if course in current_user.studentscourses %}
+                    <span class="glyphicon glyphicon-ok"></span>
+                {% elif post.course_free %}
+                    可试听
                 {% else %}
-                <span class="glyphicons glyphicons-unlock"></span>
+                <span class="glyphicon glyphicon-lock"></span>
                 {% endif %}
+            </td>
         </tr>
         {% endfor %}
 	</tbody>

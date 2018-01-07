@@ -265,10 +265,10 @@ def edit_post(id):
         post.title = form.title.data
         post.body = form.body.data
         post.course_free = form.free.data
-        post.last_update = datetime.datetime.utcnow()
+        post.last_update = datetime.utcnow()
         db.session.add(post)
         flash('The post has been updated.')
-        return redirect(url_for('.classes', id=id))
+        return redirect(url_for('.post', id=id))
     form.body.data = post.body
     form.title.data = post.title
     form.free.data = post.course_free
@@ -277,6 +277,7 @@ def edit_post(id):
 @course.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
+    course = post.course
     if not post.belong_to_course:
         return redirect(url_for('main.post', id=id))
     if not post.course_free \

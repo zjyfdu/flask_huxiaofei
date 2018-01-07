@@ -5,10 +5,9 @@
 
 {% block head %}
 {{ super() }}
-    <script src="{{ url_for('static', filename='ckeditor2/ckeditor.js') }}"></script>
 
-<script src="video/video.js"></script>
-<script src="video/video-speed.js"></script>
+<script src='/video/video.js'></script>
+<link href="/video/video-js.css" rel="stylesheet">
 {% endblock %}
 
 {% block title %}Flasky - Post{% endblock %}
@@ -45,48 +44,20 @@
                     <span class="label label-danger">编辑[Admin]</span>
                 </a>
                 {% endif %}
-{#                <span class="label label-primary">{{ post.comments.count() }}评论</span>#}
             </div>
         </div>
     </div>
 
-      <video id="my-video" class="video-js vjs-default-skin" controls width="640" height="264" data-setup="{}">
-    <source src="http://p0p79mdt3.bkt.clouddn.com/djangoDjango%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA.mp4" type="video/mp4">
-    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-  </video>
-
 <script>
-    var player = videojs('my-video', {
-        playbackRates: [0.5, 1, 1.5, 2, 4],
-        preload: 'auto',
-        controlBar: {
-          audioTrackButton: false
-        }
-      });
+
+var videos = $('video');
+videos.each(function (index, value) {
+    videoid = 'myvideo' + index;
+    $(this).after('<video id="' + videoid + '" class="video-js vjs-default-skin" controls width="800" height="400" data-setup=""><source src="'+this.src+'" type="video/mp4"> <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p> </video>');
+    videojs(videoid, {playbackRates: [0.5, 1, 1.5, 2, 4], preload: "auto", controlBar: {audioTrackButton: false} });
+    $(this).remove();
+});
+
 </script>
-{#<h4 id="comment">评论</h4>#}
-{#{{ macros.comment_macro(comments, form, moment) }}#}
-{#<form method="post" class="form" role="form">#}
-{#{{ form.csrf_token }}#}
-{#    <div class="form-group" style="display: none">#}
-{#        <label class="control-label" for="{{ form.parent_id.name }}">{{ form.parent_id.label }}</label>#}
-{#        {{ form.parent_id(class="form-control",id="parent_id",value=0) }}#}
-{#    </div>#}
-{#    <div class="form-group {% if form.body.errors %} has-error{% endif %}">#}
-{#        <label class="control-label" for="{{ form.body.name }}">{{ form.body.label }}</label>#}
-{#        {{ form.body(class="form-control",placeholder="我要提问") }}#}
-{#        {%- if form.body.errors %}#}
-{#          {%- for error in form.body.errors %}#}
-{#            <p class="help-block">{{error}}</p>#}
-{#          {%- endfor %}#}
-{#        {% endif %}#}
-{#    </div>#}
-{#    <input class="btn btn-default" id="submit" name="submit" type="submit" value="提交">#}
-{#</form>#}
-{#{% include 'main/_comments.html' %}#}
-{#{% if pagination %}#}
-{#<div class="pagination">#}
-{#    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=posts[0].id) }}#}
-{#</div>#}
-{#{% endif %}#}
+
 {% endblock %}
