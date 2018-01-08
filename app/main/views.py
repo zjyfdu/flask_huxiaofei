@@ -29,7 +29,7 @@ def index():
     else:
         topic = Topic.query.filter_by(id=int(show_followed)).first()
         query = Post.query.filter_by(topic=topic)
-    pagination = query.filter_by(belong_to_course=False).order_by(Post.last_update.desc()).paginate(
+    pagination = query.filter(Post.belong_to_course==False).order_by(Post.last_update.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
