@@ -82,7 +82,7 @@
 var videos = $('video');
 videos.each(function (index, value) {
     videoid = 'myvideo' + index;
-    $(this).after('<video id="' + videoid + '" class="video-js vjs-default-skin" controls width="800" height="400" data-setup=""><source src="'+this.src+'" type="video/mp4"> <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p> </video>');
+    $(this).after('<video id="' + videoid + '" class="video-js vjs-default-skin" controls width="auto" height="auto" data-setup=""><source src="'+this.src+'" type="video/mp4"> <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p> </video>');
     videojs(videoid, {playbackRates: [0.5, 1, 1.5, 2, 4], preload: "auto", controlBar: {audioTrackButton: false} });
     $(this).remove();
 });

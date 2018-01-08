@@ -252,3 +252,17 @@ html,body { height: 100%;}
 dl.loose > dd {
     margin-bottom: 5px;
 }
+
+    .video-js {
+    width: 100% !important;
+    height: auto !important;
+}
+.video-js:after {
+    content: '.';
+    display: block;
+    position: relative;
+    padding: 40.1% 0 0 0; /* (height/width)*100%, eg. 56.25% for 16:9 75% for 4:3 */
+    margin: 0 0 0 -100%;
+    visibility: hidden;
+    height: 0;
+}
