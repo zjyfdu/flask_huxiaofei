@@ -14,7 +14,6 @@ import random
 
 @main.route('/empty')
 def emptypage():
-    # imgnum = random.randint(1, 2)
     imgnum = 1
     return render_template('empty.html', imgurl=url_for('static', filename='coderimg/'+str(imgnum)+'.jpg'))
 
@@ -30,7 +29,7 @@ def index():
     else:
         topic = Topic.query.filter_by(id=int(show_followed)).first()
         query = Post.query.filter_by(topic=topic)
-    pagination = query.order_by(Post.last_update.desc()).paginate(
+    pagination = query.filter_by(belong_to_course=False).order_by(Post.last_update.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
@@ -236,7 +235,6 @@ def followed_by(username):
 
 
 @main.route('/all')
-@login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '', max_age=30*24*60*60)
@@ -244,7 +242,6 @@ def show_all():
 
 
 @main.route('/followed/<id>')
-@login_required
 def show_followed(id):
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', id, max_age=30*24*60*60)
