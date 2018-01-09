@@ -299,3 +299,7 @@ def post(id):
     #     return redirect(url_for('.post', id=post.id, page=-1))
     # comments = [comment for comment in post.comments if not comment.parent]
     return render_template('course/post.html', post=post)
+
+@course.route('/robots.txt')
+def robots():
+    return "# be at home"
