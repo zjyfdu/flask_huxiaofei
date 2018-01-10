@@ -11,6 +11,7 @@ import os
 import requests
 from math import ceil
 
+
 @course.route('/')
 def index():
     return redirect(url_for('course.college', collegename='fudan'))
