@@ -117,7 +117,7 @@ var _hmt = _hmt || [];
 {% endblock %}
 
 {% block content %}
-<div class="container" style="margin-top: 70px;">
+<div class="container" id="true-container" style="margin-top: 70px;">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
