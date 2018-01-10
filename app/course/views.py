@@ -8,6 +8,8 @@ from PIL import Image
 from flask_login import current_user, login_required
 from datetime import datetime
 import os
+import requests
+from math import ceil
 
 @course.route('/')
 def index():
@@ -62,6 +64,20 @@ def classes(id):
         except:
             db.session.rollback()
         return redirect(url_for('course.classes', id=id))
+    order_id = request.cookies.get('order_id'+str(course.id), '')
+    check_url = request.cookies.get('query_order_url'+str(course.id), '')
+    if order_id and check_url and course not in current_user.studentscourses:
+        # try:
+        alipay_res = requests.get(check_url).json()['alipay_trade_query_response']
+        print alipay_res
+        if alipay_res.get('trade_status','')=='TRADE_SUCCESS' and float(alipay_res.get('total_amount', '-1'))==course.price:
+            current_user.studentscourses.append(course)
+            db.session.add(current_user)
+            flash("已加入该课程！")
+        else:
+            flash("请先在弹窗中完成支付宝付款，或联系管理员13122358292")
+        # except:
+        #     flash("未知错误，请联系管理员13122358292")
     coursecomments = [comment for comment in course.coursecomments if not comment.parent]
     return render_template('course/class.html', course=course, form=form,
                            coursecomments=coursecomments)
@@ -78,7 +94,7 @@ def addcourse():
                         abstract=form.abstract.data,
                         introduction=form.introduction.data,
                         introduction2=form.introduction2.data,
-                        price=form.price.data,
+                        price=ceil(form.price.data*100)/100,
                         mode=form.mode.data,
                         school=school,
                         timestamp=datetime.now())
@@ -130,7 +146,7 @@ def editcourse(id):
         course.abstract = form.abstract.data
         course.introduction = form.introduction.data
         course.introduction2 = form.introduction2.data
-        course.price = form.price.data
+        course.price = ceil(form.price.data*100)/100
         course.mode = form.mode.data
         file = request.files[form.image.name]
         if file:
@@ -299,6 +315,8 @@ def post(id):
     #     return redirect(url_for('.post', id=post.id, page=-1))
     # comments = [comment for comment in post.comments if not comment.parent]
     return render_template('course/post.html', post=post)
+
+
 
 @course.route('/robots.txt')
 def robots():

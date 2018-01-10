@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, SubmitField, IntegerField, TextAreaField, FileField
+from wtforms import StringField, SelectField, BooleanField, SubmitField, IntegerField, TextAreaField, FileField, FloatField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo, NumberRange, DataRequired, InputRequired
 from wtforms import ValidationError
 from ..models import User
 
 class CourseForm(FlaskForm):
     title = StringField('课程名', validators=[DataRequired('内容不能为空')])
-    price = IntegerField('价格', validators=[InputRequired("请填个自然数")])
+    price = FloatField('价格', validators=[InputRequired("请填个自然数")])
     school = SelectField("选择学校", choices=[('chengdian', '成电'), ('fudan', '复旦'), ('dongnan', '东南'), ('zhongkeyuan', '中科院')])
     mode = SelectField("上课方式", choices=[('视频', '视频'), ('直播', '直播'), ('面对面', '面对面')])
     abstract = StringField('课程简介', validators=[DataRequired('内容不能为空')])

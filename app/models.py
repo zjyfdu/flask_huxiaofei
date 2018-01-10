@@ -411,7 +411,7 @@ class Course(db.Model):
     abstract = db.Column(db.String(256))
     introduction = db.Column(db.Text)
     introduction2 = db.Column(db.Text) #付款之后能看到的界面
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)
     mode = db.Column(db.String(32))
     img_url = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

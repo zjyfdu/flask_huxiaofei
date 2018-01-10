@@ -269,5 +269,5 @@ dl.loose > dd {
 
 .dropdown:hover .dropdown-menu {
     display: block;
-    margin-top: 0;
+    /*margin-top: 0;*/
 }

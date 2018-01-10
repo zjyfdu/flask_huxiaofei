@@ -41,6 +41,9 @@ def create_app(config_name):
     login_manager.init_app(app)
     search.init_app(app)
 
+    from .alipay import alipay as alipay_blueprint
+    app.register_blueprint(alipay_blueprint, url_prefix='/alipay')
+
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint, url_prefix='/community')
 
