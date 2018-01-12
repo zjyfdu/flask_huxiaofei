@@ -134,13 +134,13 @@
 
 <script>
 $('#join_in_btn').click(function () {
-    $.getJSON("{{ url_for('alipay.create_order', id=course.id) }}?mon={{ course.price }}&des={{ course.title }}&cou={{ course.id }}", function (data) {
-        console.log(data);
-        window.open(data['create_order_url']);
+    var url = "{{ url_for('alipay.create_order') }}?mon={{ course.price }}&des={{ course.title }}&cou={{ course.id }}";
+    var win = window.open(url, 'alipay', 'status=no,menubar=no,titlebar=no,toolbar=no,directories=no, width=720,height=400, top=200, left=400');
+{#    if (win == null || typeof(win)=='undefined'){#}
         $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>请在弹窗中完成支付，然后刷新（如有问题请联系13122358292）</div>');
-    }).fail(function () {
-        $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>请先登陆</div>');
-    });
+{#    } else {#}
+{#        $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>弹窗被拦截，提示用户（如有问题请联系13122358292）</div>');#}
+{#    }#}
 });
 </script>
 <!-- Go to www.addthis.com/dashboard to customize your tools -->

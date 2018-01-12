@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Flasky - Forbidden{% endblock %}
+{% block title %}用芯学 - 该页面即将关闭{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>支付成功</h1>
+    <h1>{{ message }}</h1>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
     var remaintime=3;
-    $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="timeout">该页面将在5s后自动关闭</span></div>');
+    $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="timeout">该页面将在3s后自动关闭</span></div>');
     setInterval(function(){
         if(remaintime>0) {
             $('#timeout').html('该页面将在'+remaintime+'s后自动关闭');
