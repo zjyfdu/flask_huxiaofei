@@ -134,11 +134,10 @@
 
 <script>
 $('#join_in_btn').click(function () {
-    $.getJSON("{{ url_for('alipay.create_order') }}?mon={{ course.price }}&des={{ course.title }}&cou={{ course.id }}", function (data) {
+    $.getJSON("{{ url_for('alipay.create_order', id=course.id) }}?mon={{ course.price }}&des={{ course.title }}&cou={{ course.id }}", function (data) {
         console.log(data);
         window.open(data['create_order_url']);
-        $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>请在弹窗中完成支付，然后刷新</div>');
-
+        $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>请在弹窗中完成支付，然后刷新（如有问题请联系13122358292）</div>');
     }).fail(function () {
         $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button>请先登陆</div>');
     });

@@ -11,7 +11,6 @@ import os
 import requests
 from math import ceil
 
-
 @course.route('/')
 def index():
     return redirect(url_for('course.college', collegename='fudan'))
@@ -48,6 +47,21 @@ def college(collegename):
     form.introduction2.data = school.introduction2
     return render_template('course/college.html', school=school, form=form)
 
+@course.route('/return_url/<int:id>')
+def return_url(id):
+    print 'return_url'
+    print request.args
+    course = Course.query.get(id)
+    if not course:
+        return "fail"
+    alipay_res = request.args
+    if alipay_res.get('trade_status','')=='TRADE_SUCCESS' and float(alipay_res.get('total_amount', '-1'))==course.price:
+        current_user.studentscourses.append(course)
+        db.session.add(current_user)
+        flash("已加入该课程！")
+        return "success"
+    return "fail"
+
 @course.route('/class/<int:id>', methods=['GET', 'POST'])
 def classes(id):
     course = Course.query.get_or_404(id)
@@ -65,9 +79,10 @@ def classes(id):
         except:
             db.session.rollback()
         return redirect(url_for('course.classes', id=id))
-    order_id = request.cookies.get('order_id'+str(course.id), '')
-    check_url = request.cookies.get('query_order_url'+str(course.id), '')
-    if order_id and check_url and course not in current_user.studentscourses:
+    query_order_url_key = 'query_order_url' + str(course.id) + current_user.username
+    check_url = request.cookies.get(query_order_url_key, '')
+    print check_url
+    if check_url and course not in current_user.studentscourses:
         # try:
         alipay_res = requests.get(check_url).json()['alipay_trade_query_response']
         print alipay_res
@@ -75,10 +90,11 @@ def classes(id):
             current_user.studentscourses.append(course)
             db.session.add(current_user)
             flash("已加入该课程！")
-        else:
-            flash("请先在弹窗中完成支付宝付款，或联系管理员13122358292")
+            # else:
+            #     flash("请先在弹窗中完成支付宝付款，或联系管理员13122358292")
         # except:
-        #     flash("未知错误，请联系管理员13122358292")
+        #     pass
+            # flash("未知错误，请联系管理员13122358292")
     coursecomments = [comment for comment in course.coursecomments if not comment.parent]
     return render_template('course/class.html', course=course, form=form,
                            coursecomments=coursecomments)

@@ -9,7 +9,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    var remaintime=5;
+    var remaintime=3;
     $("#true-container").prepend('<div class="alert alert-warning"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="timeout">该页面将在5s后自动关闭</span></div>');
     setInterval(function(){
         if(remaintime>0) {

@@ -4,26 +4,31 @@
 
 from flask import render_template, redirect, request, url_for, flash, jsonify, current_app, make_response
 from alipaylib import getOrderId, place_order, query_order
-from flask_login import login_required
+from flask_login import login_required, current_user
 from . import alipay
+from base64 import b64encode
 
-@alipay.route("/create_order")
+@alipay.route("/create_order/<int:id>")
 @login_required
-def create_order():
+def create_order(id):
     mon = request.args.get("mon")
     des = request.args.get("des")
     orderId = getOrderId()
     courseId = request.args.get("cou")
     if mon and des:
-        create_order_url = place_order(orderId, float(mon), des, return_url=url_for('.callback', _external=True))
+        create_order_url = place_order(orderId, float(mon), des,
+                                       return_url=url_for('.callback', _external=True),
+                                       notify_url=url_for('course.return_url', id=id, _external=True))
+        print create_order_url
         query_order_url = query_order(orderId)
         response_dict = {'create_order_url': create_order_url,
                          'query_order_url': query_order_url,
                          'order_id': orderId,
                          'status': 'succeed'}
         resp = make_response(jsonify(response_dict))
-        resp.set_cookie('order_id'+courseId, orderId, max_age=3600)
-        resp.set_cookie('query_order_url'+courseId, query_order_url, max_age=3600)
+        query_order_url_key = 'query_order_url'+courseId+current_user.username
+        print query_order_url_key
+        resp.set_cookie(query_order_url_key, query_order_url, max_age=3600, httponly=True)
         return resp
     return jsonify({'status': 'error'})
 
@@ -37,4 +42,6 @@ def callback():
     #     return "error"
     # re = notify_verify(param)
     # {'trade_no': u'2018010921001004580276368220', 'seller_id': u'2088122233733194', 'total_amount': u'1.00', 'timestamp': u'2018-01-09 20:15:55', 'charset': u'utf-8', 'app_id': u'2018010301557345', 'sign': u'mYJHx/P+BXfyu1dRrSZmgEnqXibjLnk/pSUuaaiIrvcGv6Dq9kJcw7GwXVWHB607cXMLWQ+BTUWrsB6umx88VBW5Db9P3xVl+iL1K+BtGCGgj5EQFwLG+VaWu3dwWvfK06apDdSKt01u+KKk02iu8qvicsWSsi3vTUcRTXtLw+IPvPUHCZSPTalNVooC5mpDSYhDJUES5hvibM5E/vMoYLXXH10YzIlH9mCCASF01Xj1pHgWaghC6thR+OKoR4Imdg+WSjZaPrMMhfXL1nSdYl1efZXHJsM/Trt/2WGjminp0BbLgwEnEyQPwhWZGIliL947jqKswkmkIsNQFXQTCg==', 'out_trade_no': u'201801092008018436598578', 'version': u'1.0', 'sign_type': u'RSA2', 'auth_app_id': u'2018010301557345', 'method': u'alipaylib.trade.page.pay.return'}
+    print 'call_back'
+    print request.args
     return render_template('alipay/callback.html')
