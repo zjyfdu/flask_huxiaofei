@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, redirect, request, url_for, flash, current_app, abort
+from flask import render_template, redirect, request, url_for, flash, current_app, abort, session
 from . import course
 from .. import db
 from ..models import User, Course, Role, Permission, School, CourseComment, Post
@@ -81,7 +81,8 @@ def classes(id):
         return redirect(url_for('course.classes', id=id))
     if not current_user.is_anonymous and course not in current_user.studentscourses:
         query_order_url_key = 'query_order_url' + str(course.id) + current_user.username
-        check_url = request.cookies.get(query_order_url_key, '')
+        # check_url = request.cookies.get(query_order_url_key, '')
+        check_url = session.get(query_order_url_key, '')
         if check_url:
             # try:
             alipay_res = requests.get(check_url).json()['alipay_trade_query_response']

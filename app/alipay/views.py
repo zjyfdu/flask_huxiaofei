@@ -2,7 +2,7 @@
 # author: zhaijinyuan
 # date: 2018/1/9 下午8:50
 
-from flask import render_template, redirect, request, url_for, flash, jsonify, current_app, make_response
+from flask import render_template, redirect, request, url_for, flash, jsonify, current_app, make_response, session
 from alipaylib import getOrderId, place_order, query_order
 from flask_login import login_required, current_user
 from . import alipay
@@ -25,7 +25,8 @@ def create_order():
         query_order_url = query_order(orderId)
         resp = make_response(redirect(create_order_url))
         query_order_url_key = 'query_order_url'+courseId+current_user.username
-        resp.set_cookie(query_order_url_key, query_order_url, max_age=3600, httponly=True)
+        session[query_order_url_key] = query_order_url
+        # resp.set_cookie(query_order_url_key, query_order_url, max_age=3600, httponly=True)
         return resp
     return render_template('alipay/callback.html', message='非常抱歉，未知错误')
 

@@ -4,6 +4,8 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Integ
 from wtforms.validators import Length, Email, Regexp, EqualTo, NumberRange, DataRequired
 from wtforms import ValidationError
 from ..models import User
+from flask import session
+from time import time
 
 
 class LoginForm(FlaskForm):
@@ -54,9 +56,14 @@ class PhoneRegistrationForm(FlaskForm):
             raise ValidationError(u'用户名已经被占用了。')
 
     def validate_verificationcode(self, field):
-        code = int(self.cellphone.data)
-        code = str(code%1048577)[:6]
-        if field.data!=code:
+        cellphone = str(self.cellphone.data)
+        cell_code_time = session.get(cellphone, {})
+        if not cell_code_time:
+            raise ValidationError(u'请重新发送验证码。')
+        cell_code_time = eval(cell_code_time)
+        if cell_code_time['time'] + 300 < time():
+            raise ValidationError(u'验证码过期,请重试。')
+        if field.data!=cell_code_time['code']:
             raise ValidationError(u'验证码错误，请重试。')
 
 
@@ -87,9 +94,14 @@ class PasswordResetRequestForm(FlaskForm):
             raise ValidationError(u'手机号没有注册过，直接注册新账号。')
 
     def validate_verificationcode(self, field):
-        code = int(self.cellphone.data)
-        code = str(code%1048577)[:6]
-        if field.data!=code:
+        cellphone = str(self.cellphone.data)
+        cell_code_time = session.get(cellphone, {})
+        if not cell_code_time:
+            raise ValidationError(u'请重新发送验证码。')
+        cell_code_time = eval(cell_code_time)
+        if cell_code_time['time'] + 300 < time():
+            raise ValidationError(u'验证码过期,请重试。')
+        if field.data!=cell_code_time['code']:
             raise ValidationError(u'验证码错误，请重试。')
 
 class PasswordResetForm(FlaskForm):

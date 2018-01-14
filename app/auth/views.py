@@ -1,5 +1,5 @@
 #coding: utf-8
-from flask import render_template, redirect, request, url_for, flash, jsonify, current_app
+from flask import render_template, redirect, request, url_for, flash, jsonify, current_app, session
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import auth
@@ -10,6 +10,8 @@ from ..lib.send_sms import send_sms
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm, PhoneRegistrationForm
 import os
+from random import randint
+from time import time
 
 @auth.before_app_request
 def before_request():
@@ -69,13 +71,23 @@ def register():
 def sendsms():
     cellphone = request.args.get('cellphone', '')
     try:
-        code = int(cellphone)
+        cellphone = int(cellphone)
     except:
         return jsonify({'Message': "手机号不对啊"})
-    if not(13000000000<code<19999999999):
+    if not(13000000000<cellphone<19999999999):
         return jsonify({'Message': "手机号不对啊"})
-    code = str(code % 1048577)[:6]
-    message = send_sms(phone_numbers=str(cellphone), code=code)
+    cellphone = str(cellphone)
+    cell_code_time = session.get(cellphone, '{}')
+    if cell_code_time:
+        cell_code_time = eval(cell_code_time)
+    # if cell_code_time and cell_code_time['time']+60>time():
+    #     return jsonify({'Message': "请求频繁，请60s后再试"})
+    if not cell_code_time or cell_code_time['time']+300<time():
+        code = str(randint(100000, 999999))
+        cell_code_time = {'code': code}
+    message = send_sms(phone_numbers=str(cellphone), code=cell_code_time['code'])
+    cell_code_time['time'] = time()
+    session[cellphone] = str(cell_code_time)
     return jsonify(eval(message))
 
 @auth.route('/registersms', methods=['GET', 'POST'])
@@ -88,6 +100,10 @@ def registersms():
                     confirmed=True)
         db.session.add(user)
         db.session.commit()
+        # try:
+        #     db.session.commit()
+        # except:
+        #     db.session.rollback()
         return redirect(url_for('auth.login'))
     return render_template('auth/registersms.html', form=form)
 
