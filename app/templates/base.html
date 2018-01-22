@@ -146,6 +146,24 @@ var _hmt = _hmt || [];
 
 {% block scripts %}
 {{ super() }}
-{{ moment.include_moment() }}
-{{ moment.lang("zh-CN") }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.3.1/moment-with-langs.min.js"></script>
+<script>
+function flask_moment_render(elem) {
+    $(elem).text(eval('moment("' + $(elem).data('timestamp') + '").' + $(elem).data('format') + ';'));
+    $(elem).removeClass('flask-moment');
+}
+function flask_moment_render_all() {
+    $('.flask-moment').each(function() {
+        flask_moment_render(this);
+        if ($(this).data('refresh')) {
+            (function(elem, interval) { setInterval(function() { flask_moment_render(elem) }, interval); })(this, $(this).data('refresh'));
+        }
+    })
+}
+$(document).ready(function() {
+    flask_moment_render_all();
+});
+
+moment.lang("zh-CN");
+</script>
 {% endblock %}
