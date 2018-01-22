@@ -12,6 +12,8 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
 import os
 from random import randint
 from time import time
+from SpliceURL import Splice
+from .qq_login_lib import *
 
 @auth.before_app_request
 def before_request():
@@ -230,3 +232,35 @@ def change_avatar():
     #         flash(u'头像修改成功')
     #         return redirect(url_for('main.user', username=current_user.username))
     # return render_template('auth/change_avatar.html')
+
+
+@auth.route('/qqlogin')
+def qqlogin():
+    QQ_APP_ID = '101453353'
+    REDIRECT_URI = url_for('auth.qqlogin_callback', _external=True)
+    redirect_url = Splice(scheme="https", netloc="graph.qq.com", path="/oauth2.0/authorize", query={"response_type": "code", "client_id": QQ_APP_ID, "redirect_uri": REDIRECT_URI, "scope": "get_user_info"}).geturl
+    return redirect(redirect_url)
+
+@auth.route('/qqlogin_callback')
+def qqlogin_callback():
+    code = request.args.get("code", "")
+    if code:
+        _data = Get_Access_Token(code, callbackurl=url_for('auth.qqlogin_callback', _external=True))
+        access_token = _data['access_token']
+        openid = Get_OpenID(access_token)['openid']
+        user = User.query.filter_by(qq_openid=openid).first()
+        userData = Get_User_Info(access_token, openid)
+        if not user:
+            user = User(qq_openid=openid,
+                        username=userData['nickname'],
+                        confirmed=True)
+            user.avatar_url = userData['figureurl_qq_2']
+            db.session.add(user)
+            db.session.commit()
+        login_user(user, False)
+        return redirect(request.args.get('next') or url_for('course.index'))
+        # resp = jsonify(userData)
+        # resp.set_cookie(key="logged_in", value='true', expires=None)
+        # return resp
+    else:
+        return redirect(url_for("login"))

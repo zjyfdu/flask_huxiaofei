@@ -62,8 +62,10 @@
         {% endif %}
     </div>
     <input class="btn btn-default" id="submit" name="submit" type="submit" value="注册">
-    <p><a href="{{ url_for('auth.register') }}">别想啦，我们不支持邮箱注册了</a>。</p>
 </form>
+    <br>
+    <p><a href="{{ url_for('auth.qqlogin') }}">qq快速登陆</a></p>
+    <p><a href="{{ url_for('auth.register') }}">别想啦，我们不支持邮箱注册了</a>。</p>
 </div>
 {% endblock %}
 
