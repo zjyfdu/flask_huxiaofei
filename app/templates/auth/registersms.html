@@ -3,6 +3,12 @@
 
 {% block title %}用芯学 - 注册{% endblock %}
 
+{#{% block head %}#}
+{#{{ super() }}#}
+{##}
+{#<script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" data-appid="101453353" data-redirecturi="https://yongxinxue.xin/auth/qqlogin_callback" charset="utf-8"></script>#}
+{#{% endblock %}#}
+
 {% block page_content %}
 <div class="page-header">
     <h1>注册</h1>
@@ -65,6 +71,12 @@
 </form>
     <br>
     <p><a href="{{ url_for('auth.qqlogin') }}">qq快速登陆</a></p>
+{#    <span id="qqLoginBtn"></span>#}
+{#    <script type="text/javascript">#}
+{#        QC.Login({#}
+{#           btnId:"qqLoginBtn"    //插入按钮的节点id#}
+{#    });#}
+{#    </script>#}
     <p><a href="{{ url_for('auth.register') }}">别想啦，我们不支持邮箱注册了</a>。</p>
 </div>
 {% endblock %}
