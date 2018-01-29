@@ -18,7 +18,7 @@ def renewdb():
     db.create_all()
     Role.insert_roles()
     User.generate_me()
-    School.insert_schools()
+    #School.insert_schools()
     Topic.insert_topics()
 
 @manager.command
