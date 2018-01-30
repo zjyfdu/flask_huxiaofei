@@ -62,8 +62,6 @@ var _hmt = _hmt || [];
                     </ul>
                 </li>
                 <li><a href="{{ url_for('main.index') }}">讨论区</a></li>
-{#                {{ url_for('main.emptypage') }}#}
-{#                <li><a href="{{ url_for('main.emptypage') }}">微电子培训</a></li>#}
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -130,7 +128,7 @@ var _hmt = _hmt || [];
 {% endblock %}
 
 {% block footer %}
-<div id="footer" >
+<div id="footer" style="text-align: left;">
     <div class="container">
         <dl style="float: right;">
             <dd><img src="{{ url_for('static', filename='img/wechatQR2.png') }}" class="app-qrcode"></dd>
