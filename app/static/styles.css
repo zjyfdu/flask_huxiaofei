@@ -52,9 +52,7 @@ ul.comments li.comment {
     /*padding: 8px;*/
     border-top: 1px solid #e0e0e0;
 }
-/*ul.comments li.comment:nth-child(1) {*/
-    /*border-top: 1px solid #e0e0e0;*/
-/*}*/
+
 ul.comments li.comment:hover {
     background-color: #f0f0f0;
 }
@@ -190,11 +188,6 @@ div.btn {
     margin-bottom: 20px;
 }
 
-/*div.navbar a {*/
-    /*font-size: larger;*/
-    /*font-weight: bold;*/
-/*}*/
-
 div.user-course {
     padding: 8px;
     border-bottom: 1px solid #e0e0e0;
@@ -253,7 +246,7 @@ dl.loose > dd {
     margin-bottom: 5px;
 }
 
-    .video-js {
+.video-js {
     width: 100% !important;
     height: auto !important;
 }

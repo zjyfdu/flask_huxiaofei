@@ -13,7 +13,8 @@ from math import ceil
 
 @course.route('/')
 def index():
-    return redirect(url_for('course.college', collegename='fudan'))
+    return render_template('course/index.html')
+    # return redirect(url_for('course.college', collegename='fudan'))
 
 @course.route('/college/<string:collegename>', methods=['GET', 'POST'])
 def college(collegename):
